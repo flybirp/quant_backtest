@@ -1,0 +1,36 @@
+# 示例：双均线金叉买入 + MACD辅助确认
+name: "双均线MACD策略"
+k_type: daily
+backtest_mode: signal
+initial_capital: 100000
+
+# 买入信号组（组间OR，组内AND）
+buy_groups:
+  - conditions:
+      - indicator: ma_cross_up
+        params: {fast: 5, slow: 20}
+      - indicator: macd_above_zero
+
+  - conditions:
+      - indicator: kdj_golden_cross
+      - indicator: volume_breakout
+        params: {ratio: 1.5}
+
+# 卖出信号组
+sell_groups:
+  - conditions:
+      - indicator: ma_cross_down
+        params: {fast: 5, slow: 20}
+
+  - conditions:
+      - indicator: kdj_dead_cross
+      - indicator: macd_below_zero
+
+# 仓位管理
+position_pct: 0.3
+max_positions: 5
+
+# 风控
+stop_loss_pct: 5.0
+take_profit_pct: 15.0
+trailing_stop_pct: 8.0

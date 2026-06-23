@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量能爆发底部反转 - 跨标的池横向对比</title>
+<style>
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; margin: 0; padding: 24px; background: #f8f7f4; color: #2c2c2a; }
+h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; }
+.subtitle { font-size: 13px; color: #888780; margin-bottom: 24px; }
+.card { background: #fff; border-radius: 12px; border: 0.5px solid #d3d1c7; padding: 20px; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: center; font-weight: 500; padding: 8px 12px; border-bottom: 1.5px solid #b4b2a9; color: #5f5e5a; font-size: 12px; }
+td { text-align: center; padding: 8px 12px; border-bottom: 0.5px solid #e8e6df; }
+td:first-child { text-align: left; font-weight: 500; }
+.highlight { background: #eaf3de; border-radius: 4px; padding: 2px 6px; }
+.best { color: #3b6d11; font-weight: 500; }
+.negative { color: #a32d2d; }
+.section-title { font-size: 14px; font-weight: 500; margin: 0 0 12px; color: #444441; }
+.insight { font-size: 13px; line-height: 1.7; color: #5f5e5a; margin: 0; }
+.metric-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.metric-card { flex: 1; background: #f1efe8; border-radius: 8px; padding: 12px; }
+.metric-label { font-size: 11px; color: #888780; margin-bottom: 4px; }
+.metric-value { font-size: 22px; font-weight: 500; }
+.metric-sub { font-size: 11px; color: #888780; margin-top: 2px; }
+canvas { max-width: 100%; }
+</style>
+</head>
+<body>
+
+<h1>量能爆发底部反转 - 跨标的池横向对比</h1>
+<p class="subtitle">回测区间: 2024-01-01 ~ 2026-06-06 | 5策略 × 4标的池 = 20组回测</p>
+
+<div class="metric-row">
+  <div class="metric-card">
+    <div class="metric-label">全量最佳策略</div>
+    <div class="metric-value" style="color: #3b6d11;">TOP3</div>
+    <div class="metric-sub">EV=+6.44% 全市场最优</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">大蓝筹最佳策略</div>
+    <div class="metric-value" style="color: #534ab7;">TOP1</div>
+    <div class="metric-sub">EV=+6.07% 盈亏比6.05</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">创业板最佳策略</div>
+    <div class="metric-value" style="color: #0f6e56;">TOP3</div>
+    <div class="metric-sub">EV=+6.18% 胜率47.3%</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">科创板最佳策略</div>
+    <div class="metric-value" style="color: #ba7517;">TOP3</div>
+    <div class="metric-sub">EV=+5.03% 胜率44.4%</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">EV(%) - 期望收益对比</div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="evChart" role="img" aria-label="EV对比柱状图">EV对比图</canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">胜率(%) - 各策略各池胜率对比</div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="wrChart" role="img" aria-label="胜率对比柱状图">胜率对比图</canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">盈亏比 - 风险收益对比</div>
+  <div style="position: relative; width: 100%; height: 280px;">
+    <canvas id="plrChart" role="img" aria-label="盈亏比对比柱状图">盈亏比对比图</canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">数据汇总表</div>
+  <table>
+    <tr><th>策略</th><th>标的池</th><th>EV(%)</th><th>胜率(%)</th><th>盈亏比</th><th>持仓数</th></tr>
+    <tr><td>TOP1</td><td>大蓝筹</td><td class="best">+6.07</td><td>44.3</td><td class="best">6.05</td><td>210</td></tr>
+    <tr><td>TOP1</td><td>科创板</td><td>+4.23</td><td>42.9</td><td>3.46</td><td>434</td></tr>
+    <tr><td>TOP1</td><td>创业板</td><td>+5.69</td><td>46.0</td><td>3.80</td><td>941</td></tr>
+    <tr><td>TOP1</td><td>全量</td><td>+5.90</td><td>48.7</td><td>4.08</td><td>3,154</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP2</td><td>大蓝筹</td><td>+6.06</td><td>44.8</td><td>5.93</td><td>210</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP2</td><td>科创板</td><td>+4.09</td><td>41.7</td><td>3.53</td><td>434</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP2</td><td>创业板</td><td>+4.87</td><td>43.9</td><td>3.76</td><td>941</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP2</td><td>全量</td><td>+5.38</td><td>47.3</td><td>4.02</td><td>3,154</td></tr>
+    <tr><td>TOP3</td><td>大蓝筹</td><td>+6.02</td><td class="best">45.4</td><td>5.93</td><td>249</td></tr>
+    <tr><td>TOP3</td><td>科创板</td><td class="best">+5.03</td><td class="best">44.4</td><td class="best">3.72</td><td>531</td></tr>
+    <tr><td>TOP3</td><td>创业板</td><td class="best">+6.18</td><td class="best">47.3</td><td>4.00</td><td>1,132</td></tr>
+    <tr><td>TOP3</td><td>全量</td><td class="best">+6.44</td><td class="best">49.7</td><td class="best">4.32</td><td>3,822</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP4</td><td>大蓝筹</td><td>+5.82</td><td>43.2</td><td>5.84</td><td>257</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP4</td><td>科创板</td><td>+3.26</td><td>39.0</td><td>3.30</td><td>538</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP4</td><td>创业板</td><td>+3.92</td><td>41.6</td><td>3.39</td><td>1,180</td></tr>
+    <tr style="background:#f8f7f4;"><td>TOP4</td><td>全量</td><td>+4.58</td><td>45.2</td><td>3.72</td><td>3,903</td></tr>
+    <tr><td>TOP5</td><td>大蓝筹</td><td>+4.06</td><td>43.7</td><td>4.32</td><td>435</td></tr>
+    <tr><td>TOP5</td><td>科创板</td><td>+1.90</td><td>38.1</td><td>2.63</td><td>811</td></tr>
+    <tr><td>TOP5</td><td>创业板</td><td>+3.12</td><td>43.3</td><td>2.87</td><td>1,797</td></tr>
+    <tr><td>TOP5</td><td>全量</td><td>+3.27</td><td>44.3</td><td>3.13</td><td>6,195</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <div class="section-title">关键发现</div>
+  <p class="insight">
+    <strong>1. TOP3 是全市场最佳策略</strong>：在全量、创业板、科创板三个池子中均为 EV 最高，全量 EV=+6.44% 超越 TOP1 的 +5.90%。TOP3 的关键差异是 explosion_lookback=20（vs TOP1 的 15），捕捉更多量能爆发信号，持仓从 3154 增至 3822。<br><br>
+    <strong>2. 大蓝筹仍是最强标的池</strong>：TOP1 在大蓝筹上盈亏比高达 6.05，远超其他池（3.5-4.0）。蓝筹股底部反转后反弹幅度更大，且波动更小，单笔盈利更厚。<br><br>
+    <strong>3. 科创板表现最弱</strong>：所有策略在科创板上 EV 和胜率都偏低。科创板股票波动剧烈，量能爆发后容易二次探底，双底形态更易被破坏。<br><br>
+    <strong>4. downtrend_days 是最关键参数</strong>：TOP1-3（dt=100）全量 EV > +5.3%，TOP4（dt=90）降至 +4.58%，TOP5（dt=70）仅 +3.27%。更长的前期下跌天数筛选出更高质量的底部反转信号。<br><br>
+    <strong>5. 策略稳健性</strong>：TOP1-TOP5 在所有 4 个池子上 EV 均为正值（最低 1.90%），说明"量能爆发+底部反转"逻辑在不同市场板块均有效，只是强度不同。
+  </p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const pools = ['大蓝筹', '科创板', '创业板', '全量'];
+const strategies = ['TOP1', 'TOP2', 'TOP3', 'TOP4', 'TOP5'];
+const colors = ['#534ab7', '#7f77dd', '#1d9e75', '#ba7517', '#a32d2d'];
+const bgColors = ['#cecbf6', '#afabec', '#5dcaa5', '#fac775', '#f09595'];
+
+const evData = {
+  'TOP1': [6.07, 4.23, 5.69, 5.90],
+  'TOP2': [6.06, 4.09, 4.87, 5.38],
+  'TOP3': [6.02, 5.03, 6.18, 6.44],
+  'TOP4': [5.82, 3.26, 3.92, 4.58],
+  'TOP5': [4.06, 1.90, 3.12, 3.27],
+};
+const wrData = {
+  'TOP1': [44.3, 42.9, 46.0, 48.7],
+  'TOP2': [44.8, 41.7, 43.9, 47.3],
+  'TOP3': [45.4, 44.4, 47.3, 49.7],
+  'TOP4': [43.2, 39.0, 41.6, 45.2],
+  'TOP5': [43.7, 38.1, 43.3, 44.3],
+};
+const plrData = {
+  'TOP1': [6.05, 3.46, 3.80, 4.08],
+  'TOP2': [5.93, 3.53, 3.76, 4.02],
+  'TOP3': [5.93, 3.72, 4.00, 4.32],
+  'TOP4': [5.84, 3.30, 3.39, 3.72],
+  'TOP5': [4.32, 2.63, 2.87, 3.13],
+};
+
+function makeChart(id, data, ylabel) {
+  const datasets = strategies.map((s, i) => ({
+    label: s,
+    data: data[s],
+    backgroundColor: bgColors[i],
+    borderColor: colors[i],
+    borderWidth: 1.5,
+    borderRadius: 4,
+  }));
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels: pools, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + ylabel.replace('(%)','') } }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: ylabel, font: { size: 12 } },
+          grid: { color: '#e8e6df' },
+          ticks: { font: { size: 11 } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 12 } }
+        }
+      }
+    }
+  });
+}
+
+makeChart('evChart', evData, 'EV(%)');
+makeChart('wrChart', wrData, '胜率(%)');
+makeChart('plrChart', plrData, '盈亏比');
+
+// Custom legend
+const legendDiv = document.createElement('div');
+legendDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:#5f5e5a;';
+strategies.forEach((s, i) => {
+  legendDiv.innerHTML += '<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:' + colors[i] + ';"></span>' + s + '</span>';
+});
+document.querySelector('.card').appendChild(legendDiv);
+</script>
+
+</body>
+</html>

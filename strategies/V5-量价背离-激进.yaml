@@ -1,0 +1,60 @@
+add_groups: []
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: effort_result_diverge
+    params:
+      days: 5
+      type: bull_div
+      vol_ratio: 1.3
+      vol_shrink: 0.7
+  - indicator: zhixing_fast_above_slow
+  - indicator: low_position
+    params:
+      ma60_dist: 15
+      price_pct: 50
+buy_price_type: open
+k_type: daily
+max_hold_days: 25
+name: V5-量价背离-激进
+reduce_groups: []
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+sell_price_type: avg
+stock_pool:
+- '000001'
+- '000002'
+- '000063'
+- '000333'
+- 000538
+- '000651'
+- '000725'
+- 000858
+- 000895
+- '002027'
+- 002049
+- '002230'
+- '002241'
+- '002304'
+- '002415'
+- '002475'
+- 002594
+- '300014'
+- '300015'
+- '300033'
+- '300124'
+- '300408'
+- '300433'
+- '300496'
+- '600000'
+- '600009'
+- '600016'
+- '600019'
+- '600028'
+- '600036'
+stop_loss_pct: 5
+take_profit_pct: 25
+trailing_stop_pct: 8

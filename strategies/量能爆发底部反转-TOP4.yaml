@@ -1,0 +1,74 @@
+# 量能爆发底部反转策略 - TOP4
+# EV=+5.82%, 胜率=43.2%, 盈亏比=5.84, 持仓=257
+# dt=90 vr=95 sd=3 dbl=60 dbt=2.0 bp=3.0 ra=15 el=15
+# (dt=90, 更多信号257, 更宽松的入场)
+
+name: "量能爆发底部反转-TOP4"
+k_type: daily
+backtest_mode: signal
+buy_price_type: open
+sell_price_type: avg
+buy_execution: next_day
+sell_execution: next_day
+
+stop_loss_pct: 8
+take_profit_pct: 0
+trailing_stop_pct: 0
+max_hold_days: 60
+
+entry_ladder:
+  - trigger_pct: 0
+    weight: 50
+add_threshold: 0
+add_pct: 0
+
+buy_groups:
+  - name: "量能爆发站上fast"
+    conditions:
+      - indicator: zhixing_long_downtrend
+        params:
+          days: 90
+      - indicator: recent_volume_explosion
+        params:
+          lookback: 15
+          vol_rank_threshold: 95
+          vol_ratio_threshold: 3.0
+      - indicator: volume_sustained
+        params:
+          sustain_days: 3
+          sustain_ratio: 0.7
+          explosion_lookback: 15
+          vol_rank_threshold: 95
+          vol_ratio_threshold: 3.0
+      - indicator: price_cross_above_zhixing_fast
+
+add_groups:
+  - name: "跌破fast后双底"
+    conditions:
+      - indicator: price_below_zhixing_fast
+      - indicator: double_bottom
+        params:
+          lookback: 60
+          tolerance: 2.0
+
+sell_groups:
+  - name: "双底破坏清仓"
+    conditions:
+      - indicator: double_bottom_broken
+        params:
+          lookback: 60
+          tolerance: 2.0
+          break_pct: 3.0
+  - name: "连续低于slow清仓"
+    conditions:
+      - indicator: price_below_zhixing_slow_consecutive
+        params:
+          days: 2
+          recent_above_days: 15
+
+reduce_groups:
+  - name: "连续低于BBI减仓"
+    conditions:
+      - indicator: price_below_bbi_consecutive
+        params:
+          days: 2

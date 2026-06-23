@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9策略×2标的池 回测对比报告（含交易摩擦成本）</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; line-height: 1.6; padding: 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.subtitle { font-size: 14px; color: #86868b; margin-bottom: 24px; }
+.section { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e7; }
+h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f5f5f7; font-weight: 600; text-align: center; padding: 8px 6px; border-bottom: 2px solid #e5e5e7; white-space: nowrap; }
+td { text-align: center; padding: 7px 6px; border-bottom: 1px solid #f0f0f2; }
+tr:hover { background: #fafafa; }
+.strategy-name { text-align: left; font-weight: 500; white-space: nowrap; }
+
+.positive { color: #d63031; font-weight: 600; }
+.negative { color: #00b894; font-weight: 600; }
+.zero-ev { color: #636e72; font-weight: 600; }
+.warning { color: #e17055; }
+.best { background: #fff5f5; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.summary-card { background: #f5f5f7; border-radius: 8px; padding: 16px; }
+.summary-card .label { font-size: 12px; color: #86868b; margin-bottom: 4px; }
+.summary-card .value { font-size: 24px; font-weight: 600; }
+.summary-card .detail { font-size: 12px; color: #86868b; margin-top: 4px; }
+
+.cost-model { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.cost-item { background: #fef9f0; border: 1px solid #f0d9a0; border-radius: 8px; padding: 12px; text-align: center; }
+.cost-item .title { font-size: 12px; color: #86868b; }
+.cost-item .rate { font-size: 20px; font-weight: 600; color: #d35400; }
+.cost-item .desc { font-size: 11px; color: #86868b; }
+
+.finding { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+.finding-danger { background: #fff5f5; border-left: 3px solid #d63031; }
+.finding-warning { background: #fef9f0; border-left: 3px solid #e17055; }
+.finding-success { background: #f0fff4; border-left: 3px solid #00b894; }
+.finding-info { background: #f0f7ff; border-left: 3px solid #0984e3; }
+
+.chart-container { position: relative; width: 100%; margin: 16px 0; }
+.chart-container canvas { width: 100% !important; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; font-size: 12px; color: #86868b; }
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+.ranking-table td:first-child { width: 32px; font-weight: 600; color: #86868b; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>9策略 × 2标的池 回测对比报告</h1>
+  <p class="subtitle">回测期间: 2024-01-01 ~ 2026-06-06 | 含交易摩擦成本: 万3佣金(双向) + 千1印花税(卖出) | 单次往返摩擦 ≈ 0.16%</p>
+
+  <div class="section">
+    <h2>交易成本模型</h2>
+    <div class="cost-model">
+      <div class="cost-item">
+        <div class="title">买入佣金</div>
+        <div class="rate">0.03%</div>
+        <div class="desc">万三，买入时收取</div>
+      </div>
+      <div class="cost-item">
+        <div class="title">卖出佣金</div>
+        <div class="rate">0.03%</div>
+        <div class="desc">万三，卖出时收取</div>
+      </div>
+      <div class="cost-item">
+        <div class="title">印花税</div>
+        <div class="rate">0.10%</div>
+        <div class="desc">千一，仅卖出时收取</div>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: #636e72;">单次完整往返(买+卖)摩擦成本 = 0.03%×2 + 0.10% = <b>0.16%</b><br>
+    净收益率计算: <code>net_return = (sell_price × (1 - 0.0003 - 0.001) - buy_price × (1 + 0.0003)) / (buy_price × (1 + 0.0003)) × 100</code></p>
+  </div>
+
+  <div class="section">
+    <h2>核心结论</h2>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">大蓝筹池正EV策略数</div>
+        <div class="value positive">9 / 9</div>
+        <div class="detail">全部策略保持正EV，最低 +1.16%</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">创业板池正EV策略数</div>
+        <div class="value" style="color: #e17055;">6 / 9</div>
+        <div class="detail">3个策略被成本侵蚀至接近零</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">最优策略组合</div>
+        <div class="value" style="color: #d63031; font-size: 18px;">V1-吸筹确认-激进@大蓝筹</div>
+        <div class="detail">EV=+2.47%, 胜率40.3%, 盈亏比2.72</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">标的池选择重要性</div>
+        <div class="value" style="font-size: 18px;">2~3倍</div>
+        <div class="detail">大蓝筹EV是创业板的2~3倍</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>关键发现</h2>
+    <div class="finding finding-danger">
+      <b>V6-弹簧确认-保守@创业板</b>: EV = 0.0% — 交易成本完全吞噬正期望，从+0.16%降至0，该策略在创业板上已无可操作性
+    </div>
+    <div class="finding finding-danger">
+      <b>V6-弹簧确认-激进@创业板</b>: EV = +0.08% — 几近归零，从+0.24%跌至+0.08%，实战意义极低
+    </div>
+    <div class="finding finding-warning">
+      <b>B-弹簧口袋-激进@创业板</b>: EV = +0.11% — 处于成本侵蚀边缘，从+0.27%跌至+0.11%，微利难以覆盖滑点等隐性成本
+    </div>
+    <div class="finding finding-success">
+      <b>大蓝筹池坚挺</b>: 所有9个策略在大蓝筹上EV最低也有+1.16%，成本影响仅约0.16%，远小于策略本身的Alpha
+    </div>
+    <div class="finding finding-info">
+      <b>标的池 > 策略选择</b>: 同一策略在两个池上的EV差距（~1.5-2.3%）远大于成本影响（~0.16%），选对标的池比选对策略更重要
+    </div>
+    <div class="finding finding-info">
+      <b>弹簧类信号在创业板表现差</b>: V6弹簧和B弹簧口袋在创业板上EV接近零，弹簧信号需要更长的确认周期，在波动大的创业板容易被假突破损耗
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>大蓝筹池 — 完整数据</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>策略</th>
+          <th>EV(含成本)</th>
+          <th>EV(无成本)</th>
+          <th>成本侵蚀</th>
+          <th>胜率</th>
+          <th>盈亏比</th>
+          <th>交易数</th>
+          <th>均持天数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="best">
+          <td class="strategy-name">V1-吸筹确认-激进</td>
+          <td class="positive">+2.47%</td>
+          <td>+2.64%</td>
+          <td>-0.17%</td>
+          <td>40.3%</td>
+          <td>2.72</td>
+          <td>33,921</td>
+          <td>33.0</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">A-口袋支点-激进</td>
+          <td class="positive">+2.38%</td>
+          <td>+2.54%</td>
+          <td>-0.16%</td>
+          <td>39.1%</td>
+          <td>2.74</td>
+          <td>68,592</td>
+          <td>33.1</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V6-弹簧确认-激进</td>
+          <td class="positive">+2.36%</td>
+          <td>+2.52%</td>
+          <td>-0.16%</td>
+          <td>37.1%</td>
+          <td>2.99</td>
+          <td>69,300</td>
+          <td>33.3</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">B-弹簧口袋-激进</td>
+          <td class="positive">+1.93%</td>
+          <td>+2.09%</td>
+          <td>-0.16%</td>
+          <td>34.1%</td>
+          <td>3.00</td>
+          <td>11,621</td>
+          <td>32.1</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V3-量能前置-激进</td>
+          <td class="positive">+1.49%</td>
+          <td>+1.65%</td>
+          <td>-0.16%</td>
+          <td>32.5%</td>
+          <td>3.18</td>
+          <td>90,276</td>
+          <td>27.9</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V6-弹簧确认-保守</td>
+          <td class="positive">+1.46%</td>
+          <td>+1.62%</td>
+          <td>-0.16%</td>
+          <td>31.8%</td>
+          <td>3.27</td>
+          <td>8,254</td>
+          <td>25.9</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">D-均线口袋-激进</td>
+          <td class="positive">+1.38%</td>
+          <td>+1.54%</td>
+          <td>-0.16%</td>
+          <td>37.7%</td>
+          <td>2.61</td>
+          <td>46,264</td>
+          <td>20.7</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">A-口袋支点-保守</td>
+          <td class="positive">+1.29%</td>
+          <td>+1.45%</td>
+          <td>-0.16%</td>
+          <td>37.8%</td>
+          <td>2.57</td>
+          <td>34,512</td>
+          <td>20.5</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V1-吸筹确认-保守</td>
+          <td class="positive">+1.16%</td>
+          <td>+1.32%</td>
+          <td>-0.16%</td>
+          <td>39.9%</td>
+          <td>2.30</td>
+          <td>13,368</td>
+          <td>17.0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>创业板池 — 完整数据</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>策略</th>
+          <th>EV(含成本)</th>
+          <th>EV(无成本)</th>
+          <th>成本侵蚀</th>
+          <th>胜率</th>
+          <th>盈亏比</th>
+          <th>交易数</th>
+          <th>均持天数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="strategy-name">V3-量能前置-激进</td>
+          <td class="positive">+1.03%</td>
+          <td>+1.19%</td>
+          <td>-0.16%</td>
+          <td>29.8%</td>
+          <td>3.09</td>
+          <td>279,014</td>
+          <td>16.6</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">A-口袋支点-激进</td>
+          <td class="positive">+0.81%</td>
+          <td>+0.97%</td>
+          <td>-0.16%</td>
+          <td>33.2%</td>
+          <td>2.43</td>
+          <td>167,596</td>
+          <td>18.0</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V1-吸筹确认-激进</td>
+          <td class="positive">+0.77%</td>
+          <td>+0.93%</td>
+          <td>-0.16%</td>
+          <td>34.6%</td>
+          <td>2.27</td>
+          <td>82,453</td>
+          <td>17.8</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">D-均线口袋-激进</td>
+          <td class="positive">+0.55%</td>
+          <td>+0.71%</td>
+          <td>-0.16%</td>
+          <td>33.6%</td>
+          <td>2.34</td>
+          <td>103,163</td>
+          <td>11.1</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">A-口袋支点-保守</td>
+          <td class="positive">+0.48%</td>
+          <td>+0.64%</td>
+          <td>-0.16%</td>
+          <td>33.8%</td>
+          <td>2.28</td>
+          <td>66,933</td>
+          <td>10.9</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V1-吸筹确认-保守</td>
+          <td class="positive">+0.43%</td>
+          <td>+0.59%</td>
+          <td>-0.16%</td>
+          <td>36.8%</td>
+          <td>1.97</td>
+          <td>29,197</td>
+          <td>9.1</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">B-弹簧口袋-激进</td>
+          <td class="warning">+0.11%</td>
+          <td>+0.27%</td>
+          <td>-0.16%</td>
+          <td>29.6%</td>
+          <td>2.44</td>
+          <td>27,958</td>
+          <td>21.2</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V6-弹簧确认-激进</td>
+          <td class="warning">+0.08%</td>
+          <td>+0.24%</td>
+          <td>-0.16%</td>
+          <td>31.1%</td>
+          <td>2.26</td>
+          <td>161,646</td>
+          <td>18.9</td>
+        </tr>
+        <tr>
+          <td class="strategy-name">V6-弹簧确认-保守</td>
+          <td class="zero-ev">0.0%</td>
+          <td>+0.16%</td>
+          <td>-0.16%</td>
+          <td>27.6%</td>
+          <td>2.63</td>
+          <td>13,301</td>
+          <td>14.1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>EV 对比图</h2>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background: #378ADD;"></span>大蓝筹 EV(含成本)</span>
+      <span class="legend-item"><span class="legend-dot" style="background: rgba(55,138,221,0.4);"></span>大蓝筹 EV(无成本)</span>
+      <span class="legend-item"><span class="legend-dot" style="background: #E24B4A;"></span>创业板 EV(含成本)</span>
+      <span class="legend-item"><span class="legend-dot" style="background: rgba(226,75,74,0.4);"></span>创业板 EV(无成本)</span>
+    </div>
+    <div class="chart-container" style="height: 400px;">
+      <canvas id="mainChart" role="img" aria-label="9策略2标的池EV对比图">Fallback text.</canvas>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>策略排名（综合推荐度）</h2>
+    <table class="ranking-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>策略@标的池</th>
+          <th>EV</th>
+          <th>胜率</th>
+          <th>盈亏比</th>
+          <th>交易量</th>
+          <th>推荐度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="strategy-name">V1-吸筹确认-激进@大蓝筹</td><td class="positive">+2.47%</td><td>40.3%</td><td>2.72</td><td>33,921</td><td style="color: #d63031; font-weight: 600;">★★★★★</td></tr>
+        <tr><td>2</td><td class="strategy-name">A-口袋支点-激进@大蓝筹</td><td class="positive">+2.38%</td><td>39.1%</td><td>2.74</td><td>68,592</td><td style="color: #d63031; font-weight: 600;">★★★★★</td></tr>
+        <tr><td>3</td><td class="strategy-name">V6-弹簧确认-激进@大蓝筹</td><td class="positive">+2.36%</td><td>37.1%</td><td>2.99</td><td>69,300</td><td style="color: #d63031; font-weight: 600;">★★★★★</td></tr>
+        <tr><td>4</td><td class="strategy-name">B-弹簧口袋-激进@大蓝筹</td><td class="positive">+1.93%</td><td>34.1%</td><td>3.00</td><td>11,621</td><td style="color: #e17055; font-weight: 600;">★★★★</td></tr>
+        <tr><td>5</td><td class="strategy-name">V3-量能前置-激进@大蓝筹</td><td class="positive">+1.49%</td><td>32.5%</td><td>3.18</td><td>90,276</td><td style="color: #e17055; font-weight: 600;">★★★★</td></tr>
+        <tr><td>6</td><td class="strategy-name">V6-弹簧确认-保守@大蓝筹</td><td class="positive">+1.46%</td><td>31.8%</td><td>3.27</td><td>8,254</td><td style="color: #e17055; font-weight: 600;">★★★★</td></tr>
+        <tr><td>7</td><td class="strategy-name">D-均线口袋-激进@大蓝筹</td><td class="positive">+1.38%</td><td>37.7%</td><td>2.61</td><td>46,264</td><td style="color: #e17055; font-weight: 600;">★★★</td></tr>
+        <tr><td>8</td><td class="strategy-name">A-口袋支点-保守@大蓝筹</td><td class="positive">+1.29%</td><td>37.8%</td><td>2.57</td><td>34,512</td><td style="color: #e17055; font-weight: 600;">★★★</td></tr>
+        <tr><td>9</td><td class="strategy-name">V1-吸筹确认-保守@大蓝筹</td><td class="positive">+1.16%</td><td>39.9%</td><td>2.30</td><td>13,368</td><td style="color: #e17055; font-weight: 600;">★★★</td></tr>
+        <tr><td>10</td><td class="strategy-name">V3-量能前置-激进@创业板</td><td class="positive">+1.03%</td><td>29.8%</td><td>3.09</td><td>279,014</td><td style="color: #f39c12; font-weight: 600;">★★</td></tr>
+        <tr><td>11</td><td class="strategy-name">A-口袋支点-激进@创业板</td><td class="positive">+0.81%</td><td>33.2%</td><td>2.43</td><td>167,596</td><td style="color: #f39c12; font-weight: 600;">★★</td></tr>
+        <tr><td>12</td><td class="strategy-name">V1-吸筹确认-激进@创业板</td><td class="positive">+0.77%</td><td>34.6%</td><td>2.27</td><td>82,453</td><td style="color: #f39c12; font-weight: 600;">★★</td></tr>
+        <tr><td>13</td><td class="strategy-name">D-均线口袋-激进@创业板</td><td class="positive">+0.55%</td><td>33.6%</td><td>2.34</td><td>103,163</td><td style="color: #636e72;">★</td></tr>
+        <tr><td>14</td><td class="strategy-name">A-口袋支点-保守@创业板</td><td class="positive">+0.48%</td><td>33.8%</td><td>2.28</td><td>66,933</td><td style="color: #636e72;">★</td></tr>
+        <tr><td>15</td><td class="strategy-name">V1-吸筹确认-保守@创业板</td><td class="positive">+0.43%</td><td>36.8%</td><td>1.97</td><td>29,197</td><td style="color: #636e72;">★</td></tr>
+        <tr><td>16</td><td class="strategy-name">B-弹簧口袋-激进@创业板</td><td class="warning">+0.11%</td><td>29.6%</td><td>2.44</td><td>27,958</td><td style="color: #b2bec3;">✗</td></tr>
+        <tr><td>17</td><td class="strategy-name">V6-弹簧确认-激进@创业板</td><td class="warning">+0.08%</td><td>31.1%</td><td>2.26</td><td>161,646</td><td style="color: #b2bec3;">✗</td></tr>
+        <tr><td>18</td><td class="strategy-name">V6-弹簧确认-保守@创业板</td><td class="zero-ev">0.0%</td><td>27.6%</td><td>2.63</td><td>13,301</td><td style="color: #b2bec3;">✗</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>实操建议</h2>
+    <div class="finding finding-success">
+      <b>第一梯队（强烈推荐）</b>: V1-吸筹确认-激进、A-口袋支点-激进、V6-弹簧确认-激进 — 三者在大蓝筹上EV均超2.3%，胜率37-40%，盈亏比2.7+，成本影响可控
+    </div>
+    <div class="finding finding-info">
+      <b>第二梯队（可操作）</b>: B-弹簧口袋-激进、V3-量能前置-激进、V6-弹簧确认-保守@大蓝筹 — EV在1.4-1.9%区间，需要配合仓位管理
+    </div>
+    <div class="finding finding-warning">
+      <b>创业板需谨慎</b>: 仅V3-量能前置-激进、A-口袋支点-激进、V1-吸筹确认-激进在创业板上EV超0.7%，勉强可操作。其余6个策略EV太低，不建议在创业板单独使用
+    </div>
+    <div class="finding finding-danger">
+      <b>避免的组合</b>: V6-弹簧确认-保守@创业板（EV=0）、V6-弹簧确认-激进@创业板（EV=0.08%）、B-弹簧口袋-激进@创业板（EV=0.11%）— 这3个组合扣除成本后几乎没有正期望
+    </div>
+  </div>
+</div>
+
+<script>
+const labels = [
+  'V1-吸筹确认-激进', 'A-口袋支点-激进', 'V6-弹簧确认-激进',
+  'B-弹簧口袋-激进', 'V3-量能前置-激进', 'V6-弹簧确认-保守',
+  'D-均线口袋-激进', 'A-口袋支点-保守', 'V1-吸筹确认-保守'
+];
+const dlNoCost = [2.64, 2.54, 2.52, 2.09, 1.65, 1.62, 1.54, 1.45, 1.32];
+const dlCost = [2.47, 2.38, 2.36, 1.93, 1.49, 1.46, 1.38, 1.29, 1.16];
+const cyNoCost = [0.93, 0.97, 0.24, 0.27, 1.19, 0.16, 0.71, 0.64, 0.59];
+const cyCost = [0.77, 0.81, 0.08, 0.11, 1.03, 0.00, 0.55, 0.48, 0.43];
+
+new Chart(document.getElementById('mainChart'), {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: '大蓝筹 无成本', data: dlNoCost, backgroundColor: 'rgba(55,138,221,0.3)', borderColor: 'rgba(55,138,221,0.6)', borderWidth: 1, borderRadius: 2, barPercentage: 0.18, categoryPercentage: 0.85 },
+      { label: '大蓝筹 含成本', data: dlCost, backgroundColor: 'rgba(55,138,221,0.8)', borderColor: '#378ADD', borderWidth: 1, borderRadius: 2, barPercentage: 0.18, categoryPercentage: 0.85 },
+      { label: '创业板 无成本', data: cyNoCost, backgroundColor: 'rgba(226,75,74,0.3)', borderColor: 'rgba(226,75,74,0.6)', borderWidth: 1, borderRadius: 2, barPercentage: 0.18, categoryPercentage: 0.85 },
+      { label: '创业板 含成本', data: cyCost, backgroundColor: 'rgba(226,75,74,0.8)', borderColor: '#E24B4A', borderWidth: 1, borderRadius: 2, barPercentage: 0.18, categoryPercentage: 0.85 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true, max: 3, title: { display: true, text: '期望收益 EV (%)' }, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { callback: v => v + '%' } },
+      x: { ticks: { font: { size: 11 }, maxRotation: 30, minRotation: 30 }, grid: { display: false } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# V6-弹簧确认-激进 + 分批建仓/止盈
+# 论文最优: 正金字塔 50-30-20 + 分批止盈 50%@+5% / 25%@+10% / 剩余trailing
+add_groups: []  # 原add_groups由entry_ladder替代
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: spring_shakeout
+    params:
+      spring_type: 0
+      support_period: 30
+      vol_confirm: false
+  - indicator: zhixing_fast_above_slow
+buy_price_type: open
+k_type: daily
+max_hold_days: 25
+name: V6-弹簧确认-激进-分批
+reduce_groups: []
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+sell_price_type: avg
+stock_pool: []
+stop_loss_pct: 5
+take_profit_pct: 0
+trailing_stop_pct: 10
+
+entry_ladder:
+  - trigger_pct: 0
+    weight: 50
+  - trigger_pct: 3
+    weight: 30
+  - trigger_pct: 6
+    weight: 20
+
+exit_ladder:
+  - profit_pct: 5
+    close_pct: 50
+  - profit_pct: 10
+    close_pct: 50

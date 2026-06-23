@@ -1,0 +1,2129 @@
+{
+  "results": [
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.07,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 6.05,
+      "position_count": 210,
+      "position_trades": 1227
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.06,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 5.79,
+      "position_count": 210,
+      "position_trades": 1102
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.06,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.93,
+      "position_count": 210,
+      "position_trades": 1209
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.05,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.68,
+      "position_count": 210,
+      "position_trades": 1084
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 80,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.05,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.68,
+      "position_count": 210,
+      "position_trades": 1086
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 45.2,
+      "position_pl_ratio": 5.45,
+      "position_count": 210,
+      "position_trades": 1062
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.56,
+      "position_count": 210,
+      "position_trades": 1079
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 20
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 45.4,
+      "position_pl_ratio": 5.93,
+      "position_count": 249,
+      "position_trades": 1398
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.5,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.01,
+      "position_win_rate": 45.2,
+      "position_pl_ratio": 5.42,
+      "position_count": 210,
+      "position_trades": 1011
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.5,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.99,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.63,
+      "position_count": 210,
+      "position_trades": 1108
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.5,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.93,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 6.07,
+      "position_count": 207,
+      "position_trades": 1202
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 1.5,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.83,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 5.44,
+      "position_count": 210,
+      "position_trades": 987
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.82,
+      "position_win_rate": 43.2,
+      "position_pl_ratio": 5.84,
+      "position_count": 257,
+      "position_trades": 1268
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.79,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 5.65,
+      "position_count": 257,
+      "position_trades": 1246
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 2,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.74,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 5.57,
+      "position_count": 259,
+      "position_trades": 1248
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 10
+      },
+      "position_ev": 5.71,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.39,
+      "position_count": 174,
+      "position_trades": 1064
+    },
+    {
+      "params": {
+        "downtrend_days": 110,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.77,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 4.73,
+      "position_count": 163,
+      "position_trades": 849
+    },
+    {
+      "params": {
+        "downtrend_days": 80,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.71,
+      "position_win_rate": 41.0,
+      "position_pl_ratio": 5.36,
+      "position_count": 324,
+      "position_trades": 1585
+    },
+    {
+      "params": {
+        "downtrend_days": 70,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.06,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 4.32,
+      "position_count": 435,
+      "position_trades": 1993
+    },
+    {
+      "params": {
+        "downtrend_days": 70,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.03,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 4.18,
+      "position_count": 435,
+      "position_trades": 1964
+    },
+    {
+      "params": {
+        "downtrend_days": 70,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 4.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.97,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 4.08,
+      "position_count": 435,
+      "position_trades": 1990
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.55,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 3.92,
+      "position_count": 547,
+      "position_trades": 2383
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.53,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 3.81,
+      "position_count": 547,
+      "position_trades": 2345
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.5,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 3.73,
+      "position_count": 547,
+      "position_trades": 2542
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.5,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.48,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 3.84,
+      "position_count": 547,
+      "position_trades": 2226
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.41,
+      "position_win_rate": 43.1,
+      "position_pl_ratio": 3.9,
+      "position_count": 547,
+      "position_trades": 2186
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.39,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 3.78,
+      "position_count": 547,
+      "position_trades": 2163
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.36,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 3.7,
+      "position_count": 547,
+      "position_trades": 2333
+    },
+    {
+      "params": {
+        "downtrend_days": 120,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.33,
+      "position_win_rate": 42.6,
+      "position_pl_ratio": 3.72,
+      "position_count": 129,
+      "position_trades": 563
+    },
+    {
+      "params": {
+        "downtrend_days": 50,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 3.11,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 3.54,
+      "position_count": 656,
+      "position_trades": 2586
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.76,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 3.31,
+      "position_count": 794,
+      "position_trades": 3144
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.75,
+      "position_win_rate": 44.0,
+      "position_pl_ratio": 3.34,
+      "position_count": 794,
+      "position_trades": 3356
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.74,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 3.35,
+      "position_count": 794,
+      "position_trades": 3026
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 2.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.73,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 3.38,
+      "position_count": 794,
+      "position_trades": 3241
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 0.5,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.69,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 3.35,
+      "position_count": 794,
+      "position_trades": 2620
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.69,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 3.37,
+      "position_count": 794,
+      "position_trades": 2966
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 1.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.68,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 3.31,
+      "position_count": 794,
+      "position_trades": 2783
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 0.5,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.67,
+      "position_win_rate": 43.2,
+      "position_pl_ratio": 3.4,
+      "position_count": 794,
+      "position_trades": 2541
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.66,
+      "position_win_rate": 43.3,
+      "position_pl_ratio": 3.41,
+      "position_count": 794,
+      "position_trades": 2866
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.66,
+      "position_win_rate": 43.2,
+      "position_pl_ratio": 3.35,
+      "position_count": 794,
+      "position_trades": 2682
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 0.5,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.66,
+      "position_win_rate": 43.2,
+      "position_pl_ratio": 3.44,
+      "position_count": 794,
+      "position_trades": 2743
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.64,
+      "position_win_rate": 43.1,
+      "position_pl_ratio": 3.41,
+      "position_count": 794,
+      "position_trades": 2828
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 0.5,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.63,
+      "position_win_rate": 42.9,
+      "position_pl_ratio": 3.48,
+      "position_count": 794,
+      "position_trades": 2667
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.59,
+      "position_win_rate": 43.1,
+      "position_pl_ratio": 3.37,
+      "position_count": 787,
+      "position_trades": 2866
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.57,
+      "position_win_rate": 42.8,
+      "position_pl_ratio": 3.38,
+      "position_count": 787,
+      "position_trades": 2828
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 0.5,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.57,
+      "position_win_rate": 42.6,
+      "position_pl_ratio": 3.53,
+      "position_count": 794,
+      "position_trades": 2816
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 1.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.57,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.51,
+      "position_count": 794,
+      "position_trades": 3080
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15
+      },
+      "position_ev": 2.57,
+      "position_win_rate": 42.8,
+      "position_pl_ratio": 3.4,
+      "position_count": 794,
+      "position_trades": 3530
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.55,
+      "position_win_rate": 42.1,
+      "position_pl_ratio": 3.55,
+      "position_count": 794,
+      "position_trades": 2985
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 0.5,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.54,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.57,
+      "position_count": 794,
+      "position_trades": 2744
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 2.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.54,
+      "position_win_rate": 42.6,
+      "position_pl_ratio": 3.43,
+      "position_count": 794,
+      "position_trades": 3413
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.39,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.26,
+      "position_count": 794,
+      "position_trades": 2865
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.37,
+      "position_win_rate": 42.9,
+      "position_pl_ratio": 3.29,
+      "position_count": 1046,
+      "position_trades": 3937
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 2.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.37,
+      "position_win_rate": 42.6,
+      "position_pl_ratio": 3.27,
+      "position_count": 794,
+      "position_trades": 3072
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.35,
+      "position_win_rate": 42.4,
+      "position_pl_ratio": 3.33,
+      "position_count": 1046,
+      "position_trades": 3876
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 0.5,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.34,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.28,
+      "position_count": 794,
+      "position_trades": 2420
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.31,
+      "position_win_rate": 42.7,
+      "position_pl_ratio": 3.27,
+      "position_count": 1036,
+      "position_trades": 3913
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 1.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.31,
+      "position_win_rate": 42.1,
+      "position_pl_ratio": 3.25,
+      "position_count": 794,
+      "position_trades": 2540
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.31,
+      "position_win_rate": 42.2,
+      "position_pl_ratio": 3.3,
+      "position_count": 794,
+      "position_trades": 2720
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 0.5,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.3,
+      "position_win_rate": 42.1,
+      "position_pl_ratio": 3.35,
+      "position_count": 794,
+      "position_trades": 2542
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.29,
+      "position_win_rate": 42.2,
+      "position_pl_ratio": 3.3,
+      "position_count": 1036,
+      "position_trades": 3852
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.25,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.11,
+      "position_count": 794,
+      "position_trades": 2608
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.24,
+      "position_win_rate": 42.5,
+      "position_pl_ratio": 3.12,
+      "position_count": 962,
+      "position_trades": 3483
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.23,
+      "position_win_rate": 42.4,
+      "position_pl_ratio": 3.11,
+      "position_count": 962,
+      "position_trades": 3440
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 0.5,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.21,
+      "position_win_rate": 41.4,
+      "position_pl_ratio": 3.43,
+      "position_count": 794,
+      "position_trades": 2620
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 1.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.2,
+      "position_win_rate": 40.9,
+      "position_pl_ratio": 3.43,
+      "position_count": 794,
+      "position_trades": 2836
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.18,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.08,
+      "position_count": 955,
+      "position_trades": 3483
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.18,
+      "position_win_rate": 42.1,
+      "position_pl_ratio": 3.08,
+      "position_count": 787,
+      "position_trades": 2588
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 5.0,
+        "break_pct": 2.0,
+        "recent_above_days": 30
+      },
+      "position_ev": 2.18,
+      "position_win_rate": 41.3,
+      "position_pl_ratio": 3.32,
+      "position_count": 794,
+      "position_trades": 3236
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.16,
+      "position_win_rate": 42.2,
+      "position_pl_ratio": 3.08,
+      "position_count": 955,
+      "position_trades": 3440
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.06,
+      "position_win_rate": 42.3,
+      "position_pl_ratio": 3.04,
+      "position_count": 1254,
+      "position_trades": 4704
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.04,
+      "position_win_rate": 42.0,
+      "position_pl_ratio": 3.05,
+      "position_count": 1254,
+      "position_trades": 4636
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.04,
+      "position_win_rate": 41.9,
+      "position_pl_ratio": 3.07,
+      "position_count": 1046,
+      "position_trades": 3572
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 2.01,
+      "position_win_rate": 42.2,
+      "position_pl_ratio": 3.01,
+      "position_count": 1246,
+      "position_trades": 4682
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.99,
+      "position_win_rate": 41.9,
+      "position_pl_ratio": 3.02,
+      "position_count": 1246,
+      "position_trades": 4614
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.97,
+      "position_win_rate": 41.4,
+      "position_pl_ratio": 3.03,
+      "position_count": 1133,
+      "position_trades": 4103
+    },
+    {
+      "params": {
+        "downtrend_days": 40,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.97,
+      "position_win_rate": 41.6,
+      "position_pl_ratio": 3.03,
+      "position_count": 1036,
+      "position_trades": 3539
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.96,
+      "position_win_rate": 41.3,
+      "position_pl_ratio": 3.03,
+      "position_count": 1133,
+      "position_trades": 4056
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.91,
+      "position_win_rate": 41.1,
+      "position_pl_ratio": 3.0,
+      "position_count": 1125,
+      "position_trades": 4055
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.91,
+      "position_win_rate": 41.2,
+      "position_pl_ratio": 3.0,
+      "position_count": 1125,
+      "position_trades": 4102
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.84,
+      "position_win_rate": 41.7,
+      "position_pl_ratio": 2.82,
+      "position_count": 962,
+      "position_trades": 3185
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.77,
+      "position_win_rate": 41.5,
+      "position_pl_ratio": 2.79,
+      "position_count": 955,
+      "position_trades": 3165
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.75,
+      "position_win_rate": 41.1,
+      "position_pl_ratio": 2.91,
+      "position_count": 1493,
+      "position_trades": 5622
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.74,
+      "position_win_rate": 40.9,
+      "position_pl_ratio": 2.92,
+      "position_count": 1493,
+      "position_trades": 5544
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.73,
+      "position_win_rate": 41.5,
+      "position_pl_ratio": 2.81,
+      "position_count": 1254,
+      "position_trades": 4293
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 40,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.71,
+      "position_win_rate": 41.0,
+      "position_pl_ratio": 2.88,
+      "position_count": 1485,
+      "position_trades": 5600
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 30,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.7,
+      "position_win_rate": 40.7,
+      "position_pl_ratio": 2.89,
+      "position_count": 1485,
+      "position_trades": 5522
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 97,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 1.7,
+      "position_win_rate": 41.5,
+      "position_pl_ratio": 2.68,
+      "position_count": 419,
+      "position_trades": 1581
+    },
+    {
+      "params": {
+        "downtrend_days": 60,
+        "vol_rank_threshold": 98,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 1.7,
+      "position_win_rate": 41.5,
+      "position_pl_ratio": 2.74,
+      "position_count": 359,
+      "position_trades": 1394
+    },
+    {
+      "params": {
+        "downtrend_days": 30,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.67,
+      "position_win_rate": 41.3,
+      "position_pl_ratio": 2.77,
+      "position_count": 1246,
+      "position_trades": 4262
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.66,
+      "position_win_rate": 40.4,
+      "position_pl_ratio": 2.81,
+      "position_count": 1133,
+      "position_trades": 3771
+    },
+    {
+      "params": {
+        "downtrend_days": 50,
+        "vol_rank_threshold": 97,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 1.58,
+      "position_win_rate": 42.6,
+      "position_pl_ratio": 2.53,
+      "position_count": 502,
+      "position_trades": 1852
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 95,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.56,
+      "position_win_rate": 40.2,
+      "position_pl_ratio": 2.76,
+      "position_count": 1125,
+      "position_trades": 3743
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 3,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.47,
+      "position_win_rate": 40.3,
+      "position_pl_ratio": 2.71,
+      "position_count": 1493,
+      "position_trades": 5146
+    },
+    {
+      "params": {
+        "downtrend_days": 20,
+        "vol_rank_threshold": 90,
+        "sustain_days": 5,
+        "double_bottom_lookback": 20,
+        "vol_ratio_threshold": 3.0,
+        "sustain_ratio": 0.7,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 1.0,
+        "recent_above_days": 20
+      },
+      "position_ev": 1.42,
+      "position_win_rate": 40.1,
+      "position_pl_ratio": 2.68,
+      "position_count": 1485,
+      "position_trades": 5115
+    }
+  ],
+  "top20": [
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.07,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 6.05,
+      "position_count": 210,
+      "position_trades": 1227
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.06,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 5.79,
+      "position_count": 210,
+      "position_trades": 1102
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.06,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.93,
+      "position_count": 210,
+      "position_trades": 1209
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.05,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.68,
+      "position_count": 210,
+      "position_trades": 1084
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 80,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.05,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.68,
+      "position_count": 210,
+      "position_trades": 1086
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 45.2,
+      "position_pl_ratio": 5.45,
+      "position_count": 210,
+      "position_trades": 1062
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.56,
+      "position_count": 210,
+      "position_trades": 1079
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 20
+      },
+      "position_ev": 6.02,
+      "position_win_rate": 45.4,
+      "position_pl_ratio": 5.93,
+      "position_count": 249,
+      "position_trades": 1398
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 2.5,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 6.01,
+      "position_win_rate": 45.2,
+      "position_pl_ratio": 5.42,
+      "position_count": 210,
+      "position_trades": 1011
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.5,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.99,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.63,
+      "position_count": 210,
+      "position_trades": 1108
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.5,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.93,
+      "position_win_rate": 43.5,
+      "position_pl_ratio": 6.07,
+      "position_count": 207,
+      "position_trades": 1202
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 1.5,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.83,
+      "position_win_rate": 44.3,
+      "position_pl_ratio": 5.44,
+      "position_count": 210,
+      "position_trades": 987
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.82,
+      "position_win_rate": 43.2,
+      "position_pl_ratio": 5.84,
+      "position_count": 257,
+      "position_trades": 1268
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.79,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 5.65,
+      "position_count": 257,
+      "position_trades": 1246
+    },
+    {
+      "params": {
+        "downtrend_days": 90,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 2,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 5.74,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 5.57,
+      "position_count": 259,
+      "position_trades": 1248
+    },
+    {
+      "params": {
+        "downtrend_days": 100,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 3.0,
+        "break_pct": 3.0,
+        "recent_above_days": 10,
+        "explosion_lookback": 10
+      },
+      "position_ev": 5.71,
+      "position_win_rate": 44.8,
+      "position_pl_ratio": 5.39,
+      "position_count": 174,
+      "position_trades": 1064
+    },
+    {
+      "params": {
+        "downtrend_days": 110,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.77,
+      "position_win_rate": 43.6,
+      "position_pl_ratio": 4.73,
+      "position_count": 163,
+      "position_trades": 849
+    },
+    {
+      "params": {
+        "downtrend_days": 80,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.71,
+      "position_win_rate": 41.0,
+      "position_pl_ratio": 5.36,
+      "position_count": 324,
+      "position_trades": 1585
+    },
+    {
+      "params": {
+        "downtrend_days": 70,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 60,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.06,
+      "position_win_rate": 43.7,
+      "position_pl_ratio": 4.32,
+      "position_count": 435,
+      "position_trades": 1993
+    },
+    {
+      "params": {
+        "downtrend_days": 70,
+        "vol_rank_threshold": 95,
+        "vol_ratio_threshold": 3.0,
+        "sustain_days": 3,
+        "sustain_ratio": 0.7,
+        "double_bottom_lookback": 40,
+        "double_bottom_tolerance": 2.0,
+        "break_pct": 3.0,
+        "recent_above_days": 15,
+        "explosion_lookback": 15
+      },
+      "position_ev": 4.03,
+      "position_win_rate": 44.1,
+      "position_pl_ratio": 4.18,
+      "position_count": 435,
+      "position_trades": 1964
+    }
+  ]
+}

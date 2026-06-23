@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Project data - too large for git
+_indicator_cache/
+*.log
+
+# Workbuddy
+.workbuddy/
+
+# Vite cache
+.vite/
