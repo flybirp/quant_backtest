@@ -1,0 +1,59 @@
+add_groups: []
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: pocket_pivot
+    params:
+      lookback: 10
+  - indicator: zhixing_fast_above_slow
+  - indicator: price_near_zhixing
+    params:
+      tolerance: 3
+  - indicator: volume_shrink
+    params:
+      ratio: 0.6
+buy_price_type: open
+k_type: daily
+max_hold_days: 0
+name: D-均线口袋-保守
+reduce_groups: []
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_fast_below_slow
+sell_price_type: avg
+stock_pool:
+- '000001'
+- '000002'
+- '000063'
+- '000333'
+- 000538
+- '000651'
+- '000725'
+- 000858
+- 000895
+- '002027'
+- 002049
+- '002230'
+- '002241'
+- '002304'
+- '002415'
+- '002475'
+- 002594
+- '300014'
+- '300015'
+- '300033'
+- '300124'
+- '300408'
+- '300433'
+- '300496'
+- '600000'
+- '600009'
+- '600016'
+- '600019'
+- '600028'
+- '600036'
+stop_loss_pct: 5
+take_profit_pct: 15
+trailing_stop_pct: 8

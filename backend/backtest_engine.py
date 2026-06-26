@@ -13,6 +13,7 @@ from backend.indicators import compute_all_indicators
 from backend.strategy_engine import (
     StrategyConfig, Signal, Trade, check_group, resolve_price, detect_signals_vectorized
 )
+from backend.state_machine import ZZH10StateMachine
 
 
 @dataclass
@@ -65,16 +66,75 @@ def _resolve_stock_pool(config: StrategyConfig) -> list[str]:
 
 
 def _net_profit_pct(buy_price: float, sell_price: float,
-                    commission_rate: float, stamp_tax_rate: float) -> float:
+                    commission_rate: float, stamp_tax_rate: float,
+                    slippage_pct: float = 0.0) -> float:
     """计算扣除交易成本后的净收益率
 
-    买入成本: buy_price * (1 + commission_rate)
-    卖出所得: sell_price * (1 - commission_rate - stamp_tax_rate)
+    买入成本: buy_price * (1 + commission_rate + slippage_pct)
+    卖出所得: sell_price * (1 - commission_rate - stamp_tax_rate - slippage_pct)
     净收益率 = (卖出所得 - 买入成本) / 买入成本 * 100
     """
-    cost = buy_price * (1 + commission_rate)
-    proceeds = sell_price * (1 - commission_rate - stamp_tax_rate)
+    cost = buy_price * (1 + commission_rate + slippage_pct)
+    proceeds = sell_price * (1 - commission_rate - stamp_tax_rate - slippage_pct)
     return (proceeds - cost) / cost * 100
+
+
+def _apply_slippage(price: float, side: str, slippage_pct: float) -> float:
+    """应用滑点
+
+    Args:
+        price: 原始价格
+        side: 'buy' (买入成本更高) 或 'sell' (卖出收入更低)
+        slippage_pct: 滑点比例（小数，如 0.001 = 0.1%）
+
+    Returns:
+        调整后的价格
+    """
+    if slippage_pct <= 0:
+        return price
+    if side == "buy":
+        return price * (1 + slippage_pct)  # 买入成交价略高
+    else:
+        return price * (1 - slippage_pct)  # 卖出成交价略低
+
+
+def _is_limit_up(pct_change: float, threshold: float = 9.5) -> bool:
+    """判断是否涨停（A股 ±10%，ST ±5%，科创板/创业板 ±20%）
+
+    保守处理：涨幅 >= 9.5% 判定为涨停
+    """
+    return pct_change >= threshold
+
+
+def _is_limit_down(pct_change: float, threshold: float = -9.5) -> bool:
+    """判断是否跌停"""
+    return pct_change <= threshold
+
+
+def _effective_trail(profit_pct: float, config) -> float:
+    """计算动态移动止损：盈利越高，止损越紧。"""
+    if not config.trailing_stop_tiers:
+        return config.trailing_stop_pct
+    tier = max((p for p in config.trailing_stop_tiers if p <= profit_pct), default=0)
+    return config.trailing_stop_tiers[tier]
+
+
+def _is_limit_locked(pct_change: float, turnover_rate: float,
+                     threshold: float = 9.5, min_turnover: float = 0.5) -> bool:
+    """涨停/跌停封板且无量 = 无法成交
+
+    - 涨停板且换手率 < min_turnover% → 买不到
+    - 跌停板且换手率 < min_turnover% → 卖不掉
+
+    Args:
+        pct_change: 当日涨跌幅%
+        turnover_rate: 当日换手率%
+        threshold: 涨跌停阈值
+        min_turnover: 最低换手率（低于此值判定为无量封板）
+    """
+    is_limit = abs(pct_change) >= threshold
+    is_locked = turnover_rate < min_turnover
+    return is_limit and is_locked
 
 
 def run_backtest(config: StrategyConfig,
@@ -230,14 +290,22 @@ def _run_signal_mode_streaming(config: StrategyConfig,
         add_triggered: set[str] = set()
         reduce_triggered: set[str] = set()
 
-        has_signals = bool(sig_buy or sig_sell or sig_add or sig_reduce)
+        # 状态机模式
+        use_sm = bool(config.state_machine)
+        sm = None
+        if use_sm:
+            sm = ZZH10StateMachine(config.state_machine_params)
+            sm.reset()
+            sm.prepare(df)  # 预计算所有结构检测数组
+
+        has_signals = bool(sig_buy or sig_sell or sig_add or sig_reduce) or use_sm
 
         for idx in range(n):
             ds = date_strs[idx]
             close_price = close_arr[idx]
 
-            # 无信号且无持仓 → 跳过
-            if not open_lots and idx not in sig_buy:
+            # 无信号且无持仓 → 跳过（状态机模式下也不跳过，但状态机已预计算）
+            if not use_sm and not open_lots and idx not in sig_buy:
                 all_dates_set.add(ds)
                 continue
 
@@ -264,23 +332,51 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                                                       config.sell_price_type)
                 sell_exec_ds = ds
 
+            # 状态机评估
+            sm_action = ""
+            sm_reason = ""
+            if use_sm and sm is not None:
+                entry_p = open_lots[0]["buy_price"] if open_lots else 0.0
+                entry_d = open_lots[0]["buy_ds"] if open_lots else ""
+                sm_action, sm_reason = sm.evaluate(
+                    df, idx,
+                    has_position=bool(open_lots),
+                    has_added=bool(add_triggered),
+                    entry_price=entry_p,
+                    entry_date=str(entry_d),
+                )
+
             # 1. 清仓信号（双底破坏仅在加仓触发后生效）
-            if idx in sig_sell and open_lots and sell_exec_price > 0:
+            # 涨跌停过滤：跌停封板无量时跳过卖出
+            sell_limit_blocked = False
+            if config.limit_filter and sell_exec_price > 0:
+                pct_chg_s = df["pct_change"].iloc[idx]
+                tr_s = df.get("turnover_rate", pd.Series([0] * len(df))).iloc[idx]
+                if _is_limit_locked(pct_chg_s, tr_s):
+                    sell_limit_blocked = True
+
+            if not sell_limit_blocked and (idx in sig_sell or sm_action == "sell") and open_lots and sell_exec_price > 0:
                 current_tid = open_lots[0]["trade_id"] if open_lots else ""
-                # 重新评估哪个 sell_group 触发，区分"双底破坏"和"连续低于slow"
                 should_sell = False
                 sell_reason_str = "sell_signal"
-                for sell_grp in config.sell_groups:
-                    grp_name = sell_grp.get("name", "")
-                    ok, _ = check_group(df, idx, sell_grp)
-                    if not ok:
-                        continue
-                    # 双底破坏清仓: 仅在 add_groups 触发过才生效
-                    if "双底" in grp_name and current_tid not in add_triggered:
-                        continue
+
+                if sm_action == "sell":
+                    # 状态机卖点：直接使用状态机的理由
                     should_sell = True
-                    sell_reason_str = grp_name
-                    break
+                    sell_reason_str = sm_reason
+                else:
+                    # 重新评估哪个 sell_group 触发，区分"双底破坏"和"连续低于slow"
+                    for sell_grp in config.sell_groups:
+                        grp_name = sell_grp.get("name", "")
+                        ok, _ = check_group(df, idx, sell_grp)
+                        if not ok:
+                            continue
+                        # 双底破坏清仓: 仅在 add_groups 触发过才生效
+                        if "双底" in grp_name and current_tid not in add_triggered:
+                            continue
+                        should_sell = True
+                        sell_reason_str = grp_name
+                        break
 
                 if should_sell:
                     while open_lots:
@@ -303,7 +399,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                     reduce_triggered.discard(current_tid)
 
             # 2. 减仓信号（一次性触发：每个trade_id仅减一次，按总仓位比例）
-            if idx in sig_reduce and open_lots and sell_exec_price > 0:
+            if (idx in sig_reduce or sm_action == "reduce") and open_lots and sell_exec_price > 0:
                 current_tid = open_lots[0]["trade_id"] if open_lots else ""
                 # zzh0.2: 减仓仅触发一次
                 if current_tid not in reduce_triggered:
@@ -433,6 +529,12 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                     elif config.take_profit_pct > 0 and loss_pct >= config.take_profit_pct:
                         should_close = True
                         close_reason = f"止盈+{config.take_profit_pct}%"
+                    elif config.trailing_stop_tiers and lot["highest"] > lot["buy_price"]:
+                        profit = (lot["highest"] - lot["buy_price"]) / lot["buy_price"] * 100
+                        trail = _effective_trail(profit, config)
+                        dd = (lot["highest"] - close_price) / lot["highest"] * 100
+                        if dd >= trail:
+                            close_reason = f"动态移动止损-{trail}%"
                     elif config.trailing_stop_pct > 0 and lot["highest"] > lot["buy_price"]:
                         dd = (lot["highest"] - close_price) / lot["highest"] * 100
                         if dd >= config.trailing_stop_pct:
@@ -499,9 +601,18 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                             open_lots.append(new_lot)
                             entered.add(layer_idx)
 
-            # 7. 买入信号（排他锁：同一标的已有持仓时不开新仓）
-            if idx in sig_buy and buy_exec_price > 0 and not open_lots:
+            # 7. 买入信号（排他锁：同一标的已有持仓时不开新仓，可通过 exclusive_lock 关闭）
+            # 涨跌停过滤：涨停封板无量时跳过买入
+            limit_blocked = False
+            if config.limit_filter and buy_exec_price > 0:
+                pct_chg = df["pct_change"].iloc[idx]
+                tr = df.get("turnover_rate", pd.Series([0] * len(df))).iloc[idx]
+                if _is_limit_locked(pct_chg, tr):
+                    limit_blocked = True
+
+            if not limit_blocked and (idx in sig_buy or sm_action == "buy") and buy_exec_price > 0 and (not open_lots or not config.exclusive_lock):
                 new_tid = f"T{uuid.uuid4().hex[:8]}"
+                buy_reason = sm_reason if sm_action == "buy" else "buy_signal"
                 if config.entry_ladder:
                     # 分批建仓模式: 首笔按entry_ladder[0]的weight
                     first_weight = config.entry_ladder[0]["weight"] if config.entry_ladder else 100
@@ -510,7 +621,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                         "buy_price": buy_exec_price,
                         "highest": buy_exec_price,
                         "shares": first_weight,
-                        "reason": "buy_signal",
+                        "reason": buy_reason,
                         "trade_id": new_tid,
                         "entry_layer": 0,
                         "exit_triggered": set(),
@@ -527,48 +638,54 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                         "buy_price": buy_exec_price,
                         "highest": buy_exec_price,
                         "shares": 100,
-                        "reason": "buy_signal",
+                        "reason": buy_reason,
                         "trade_id": new_tid,
                         "entry_layer": 0,
                         "exit_triggered": set(),
                     }
                     open_lots.append(new_lot)
 
-            # 8. 加仓信号（add_groups，与entry_ladder独立）
+            # 8. 加仓信号（add_groups / 状态机，与entry_ladder独立）
             # zzh0.2: 加仓数量=entry_ladder[0].weight（与建仓等量），标记 add_triggered
-            if idx in sig_add and open_lots and buy_exec_price > 0:
-                # 加仓股数：优先取 entry_ladder[0].weight，否则默认100
-                add_shares = config.entry_ladder[0]["weight"] if config.entry_ladder else 100
-                if config.add_threshold > 0:
-                    last_lot = open_lots[-1]
-                    profit_from_last = (buy_exec_price - last_lot["buy_price"]) / last_lot["buy_price"] * 100
-                    if profit_from_last >= config.add_threshold:
+            # zzh0.2: 每个 trade_id 仅加仓1次
+            if (idx in sig_add or sm_action == "add") and open_lots and buy_exec_price > 0:
+                current_tid = open_lots[0]["trade_id"]
+                if current_tid in add_triggered:
+                    pass  # 已加过仓，跳过
+                else:
+                    add_reason = sm_reason if sm_action == "add" else "add_signal"
+                    # 加仓股数：优先取 entry_ladder[0].weight，否则默认100
+                    add_shares = config.entry_ladder[0]["weight"] if config.entry_ladder else 100
+                    if config.add_threshold > 0:
+                        last_lot = open_lots[-1]
+                        profit_from_last = (buy_exec_price - last_lot["buy_price"]) / last_lot["buy_price"] * 100
+                        if profit_from_last >= config.add_threshold:
+                            new_lot = {
+                                "buy_ds": buy_exec_ds,
+                                "buy_price": buy_exec_price,
+                                "highest": buy_exec_price,
+                                "shares": add_shares,
+                                "reason": add_reason,
+                                "trade_id": last_lot["trade_id"],
+                                "entry_layer": last_lot.get("entry_layer", 0) + 1,
+                                "exit_triggered": set(),
+                            }
+                            open_lots.append(new_lot)
+                            add_triggered.add(last_lot["trade_id"])
+                    else:
+                        last_lot = open_lots[-1]
                         new_lot = {
                             "buy_ds": buy_exec_ds,
                             "buy_price": buy_exec_price,
                             "highest": buy_exec_price,
                             "shares": add_shares,
-                            "reason": "add_signal",
+                            "reason": add_reason,
                             "trade_id": last_lot["trade_id"],
                             "entry_layer": last_lot.get("entry_layer", 0) + 1,
                             "exit_triggered": set(),
                         }
                         open_lots.append(new_lot)
                         add_triggered.add(last_lot["trade_id"])
-                else:
-                    last_lot = open_lots[-1]
-                    new_lot = {
-                        "buy_ds": buy_exec_ds,
-                        "buy_price": buy_exec_price,
-                        "highest": buy_exec_price,
-                        "shares": add_shares,
-                        "reason": "add_signal",
-                        "trade_id": last_lot["trade_id"],
-                        "entry_layer": last_lot.get("entry_layer", 0) + 1,
-                        "exit_triggered": set(),
-                    }
-                    open_lots.append(new_lot)
-                    add_triggered.add(last_lot["trade_id"])
 
             all_dates_set.add(ds)
 
@@ -591,7 +708,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                 ))
 
         processed += 1
-        if progress_callback and processed % 500 == 0:
+        if progress_callback and processed % 10 == 0:
             progress_callback(processed, len(codes))
 
     if progress_callback:
@@ -601,18 +718,23 @@ def _run_signal_mode_streaming(config: StrategyConfig,
     # 转为pd.Timestamp列表以兼容_compute_statistics
     all_dates = [pd.Timestamp(d) for d in all_dates]
 
-    # 构建简易权益曲线
+    # 构建简易权益曲线 — 信号模式用累计求和（每笔独立），避免复利爆炸
     equity_curve = []
     if all_trades:
         base = config.initial_capital
         cum_pnl = base
-        for t in all_trades:
-            cum_pnl = cum_pnl * (1 + t.profit_pct / 100)
+        cumulative_sum_pct = 0.0
+        # 按卖出日期排序
+        sorted_trades = sorted(all_trades, key=lambda t: str(t.sell_date))
+        for t in sorted_trades:
+            cumulative_sum_pct += t.profit_pct
+            cum_pnl = base * (1 + cumulative_sum_pct / 100)
             equity_curve.append({
                 "date": t.sell_date,
-                "equity": round(cum_pnl, 2),
+                "equity": round(max(cum_pnl, 0.01), 2),
                 "cash": 0,
                 "positions": 0,
+                "cum_return_pct": round(cumulative_sum_pct, 2),
             })
 
     return _compute_statistics(config, all_trades, equity_curve, all_dates)
@@ -793,6 +915,13 @@ def _run_signal_mode(config: StrategyConfig,
                 elif config.take_profit_pct > 0 and loss_pct >= config.take_profit_pct:
                     should_close = True
                     close_reason = f"止盈+{config.take_profit_pct}%"
+                elif config.trailing_stop_tiers and hi > bp:
+                    profit = (hi - bp) / bp * 100
+                    trail = _effective_trail(profit, config)
+                    dd = (hi - close_price) / hi * 100
+                    if dd >= trail:
+                        should_close = True
+                        close_reason = f"动态移动止损-{trail}%"
                 elif config.trailing_stop_pct > 0 and hi > bp:
                     dd = (hi - close_price) / hi * 100
                     if dd >= config.trailing_stop_pct:
@@ -831,10 +960,10 @@ def _run_signal_mode(config: StrategyConfig,
                 if close_price > hi:
                     open_lots[i] = (bd, bp, close_price, sh, reason, tid)
 
-            # === 5. 处理买入信号（排他锁：同一标的已有持仓时不开新仓）===
+            # === 5. 处理买入信号（排他锁：同一标的已有持仓时不开新仓，可通过 exclusive_lock 关闭）===
             day_buys = [s for s in day_sigs if s.signal_type == "buy"]
             for buy_sig in day_buys:
-                if buy_exec_price > 0 and not open_lots:
+                if buy_exec_price > 0 and (not open_lots or not config.exclusive_lock):
                     new_tid = f"T{uuid.uuid4().hex[:8]}"
                     open_lots.append((buy_exec_ds, buy_exec_price, buy_exec_price, 100, buy_sig.reason, new_tid))
 
@@ -877,16 +1006,19 @@ def _run_signal_mode(config: StrategyConfig,
                     trade_id=tid,
                 ))
 
-    # === 构建简易权益曲线（每笔交易盈亏累加） ===
+    # === 构建简易权益曲线（信号模式用累计求和，每笔独立） ===
     equity_curve = []
     if trades:
         base = config.initial_capital
         cum_pnl = base
-        for t in trades:
-            cum_pnl = cum_pnl * (1 + t.profit_pct / 100)
+        cumulative_sum_pct = 0.0
+        sorted_trades = sorted(trades, key=lambda t: str(t.sell_date))
+        for t in sorted_trades:
+            cumulative_sum_pct += t.profit_pct
+            cum_pnl = base * (1 + cumulative_sum_pct / 100)
             equity_curve.append({
                 "date": t.sell_date,
-                "equity": round(cum_pnl, 2),
+                "equity": round(max(cum_pnl, 0.01), 2),
                 "cash": 0,
                 "positions": 0,
             })
@@ -970,7 +1102,14 @@ def _run_portfolio_mode(config: StrategyConfig,
                 should_sell = True
                 sell_reason = f"止盈+{config.take_profit_pct}%"
 
-            if config.trailing_stop_pct > 0 and pos.highest_price > pos.buy_price:
+            if config.trailing_stop_tiers and pos.highest_price > pos.buy_price:
+                profit = (pos.highest_price - pos.buy_price) / pos.buy_price * 100
+                trail = _effective_trail(profit, config)
+                drawdown = (pos.highest_price - close_price) / pos.highest_price * 100
+                if drawdown >= trail:
+                    should_sell = True
+                    sell_reason = f"动态移动止损-{trail}%"
+            elif config.trailing_stop_pct > 0 and pos.highest_price > pos.buy_price:
                 drawdown = (pos.highest_price - close_price) / pos.highest_price * 100
                 if drawdown >= config.trailing_stop_pct:
                     should_sell = True
@@ -1023,7 +1162,7 @@ def _run_portfolio_mode(config: StrategyConfig,
         if ds in buy_signals and len(positions) < config.max_positions:
             candidates = buy_signals[ds]
             for sig in candidates:
-                if sig.code in positions:
+                if config.exclusive_lock and sig.code in positions:
                     continue
                 if len(positions) >= config.max_positions:
                     break
@@ -1129,28 +1268,45 @@ def _compute_statistics(config: StrategyConfig,
                          trades: list[Trade],
                          equity_curve: list[dict],
                          all_dates: list) -> BacktestResult:
-    """计算统计指标（两种模式共用）"""
+    """计算统计指标（两种模式共用）
+
+    signal 模式：基于交易盈亏累计的权益曲线计算所有指标（不再是僵尸指标）
+    portfolio 模式：基于真实资金权益曲线计算所有指标
+    """
     final_capital = config.initial_capital
     if equity_curve:
         final_capital = equity_curve[-1]["equity"]
 
-    if config.backtest_mode == "signal":
-        total_return = 0.0
-    else:
-        total_return = (final_capital - config.initial_capital) / config.initial_capital * 100
+    # 总收益：signal模式也能算（从交易累计权益曲线）
+    total_return = (final_capital - config.initial_capital) / config.initial_capital * 100 if config.initial_capital > 0 else 0.0
 
     # 年化收益率
     if all_dates and len(all_dates) > 1:
         days = (all_dates[-1] - all_dates[0]).days
-        if days > 0 and config.backtest_mode != "signal":
+        if days > 0 and final_capital > 0:
             annual_return = ((final_capital / config.initial_capital) ** (365 / days) - 1) * 100
         else:
             annual_return = 0
     else:
         annual_return = 0
 
-    # 最大回撤（仅portfolio模式有意义）
-    if config.backtest_mode != "signal" and equity_curve and len(equity_curve) > 1:
+    # 最大回撤
+    if config.backtest_mode == "signal" and equity_curve and len(equity_curve) > 1:
+        # 信号模式：从累计收益率曲线算 MaxDD（避免兜底伪影）
+        cum_returns = [0.0] + [e.get("cum_return_pct", (e["equity"] / config.initial_capital - 1) * 100)
+                                for e in equity_curve]
+        peak = cum_returns[0]
+        max_dd = 0.0
+        for r in cum_returns:
+            if r > peak:
+                peak = r
+            dd = r - peak
+            if dd < max_dd:
+                max_dd = dd
+        # max_dd 是累计收益率的百分点跌幅，转为相对峰值的百分比
+        if peak > 0:
+            max_dd = max_dd / (100 + peak) * 100
+    elif equity_curve and len(equity_curve) > 1:
         equity_series = pd.Series([e["equity"] for e in equity_curve])
         rolling_max = equity_series.cummax()
         drawdown = (equity_series - rolling_max) / rolling_max * 100
@@ -1188,21 +1344,24 @@ def _compute_statistics(config: StrategyConfig,
         max_profit = 0
         max_loss = 0
 
-    # Sharpe ratio（仅portfolio模式有意义）
-    if config.backtest_mode != "signal" and equity_curve and len(equity_curve) > 1:
-        daily_returns = []
-        for i in range(1, len(equity_curve)):
-            r = (equity_curve[i]["equity"] - equity_curve[i - 1]["equity"]) / equity_curve[i - 1]["equity"]
-            daily_returns.append(r)
-        if len(daily_returns) > 0 and np.std(daily_returns) > 0:
-            sharpe = np.mean(daily_returns) / np.std(daily_returns) * np.sqrt(252)
+    # Sharpe ratio: use forward-filled daily returns for proper computation
+    # even when equity_curve is sparse (signal mode)
+    from analytics.common import forward_fill_daily
+    if equity_curve and len(equity_curve) > 1:
+        ff_df = forward_fill_daily(equity_curve)
+        if len(ff_df) > 1:
+            daily_ret = ff_df["equity"].pct_change().dropna()
+            if len(daily_ret) > 1 and float(np.std(daily_ret)) > 0:
+                sharpe = float(np.mean(daily_ret) / np.std(daily_ret) * np.sqrt(252))
+            else:
+                sharpe = 0.0
         else:
-            sharpe = 0
+            sharpe = 0.0
     else:
-        sharpe = 0
+        sharpe = 0.0
 
-    annual_returns = _calc_period_returns(equity_curve, "Y") if config.backtest_mode != "signal" else []
-    monthly_returns = _calc_period_returns(equity_curve, "M") if config.backtest_mode != "signal" else []
+    annual_returns = _calc_period_returns(equity_curve, "Y") if equity_curve else []
+    monthly_returns = _calc_period_returns(equity_curve, "M") if equity_curve else []
 
     return BacktestResult(
         config_name=config.name,

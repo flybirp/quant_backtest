@@ -1,0 +1,11 @@
+# <type>(<scope>): <subject>
+# 
+# type: feat, fix, refactor, test, docs, chore, perf, style
+# scope: engine, analytics, validation, report, strategy, ml
+# 
+# Examples:
+#   feat(analytics): add drawdown recovery analysis
+#   fix(engine): correct signal mode Sharpe with forward-fill
+#   refactor(analytics): extract shared to_equity_df to common.py
+#   test(risk): add VaR and drawdown recovery unit tests
+#   docs: add ARCHITECTURE.md with data flow diagram

@@ -87,10 +87,15 @@ def _csv_mtime(code: str) -> float:
 
 
 def load_stock_with_indicators(code: str, ktype: str = "daily",
-                               force_recompute: bool = False) -> pd.DataFrame:
+                               force_recompute: bool = False,
+                               required_cols: set[str] | None = None) -> pd.DataFrame:
     """加载股票并计算指标，优先使用Parquet缓存
 
     如果缓存存在且比CSV新，直接读缓存；否则重新计算并写入缓存。
+
+    Args:
+        required_cols: 需要的预计算列。None=全部计算。
+            注意：缓存始终存全量列，required_cols 仅加速首次计算。
     """
     from backend.indicators import compute_all_indicators
 
@@ -104,19 +109,19 @@ def load_stock_with_indicators(code: str, ktype: str = "daily",
             try:
                 df = pd.read_parquet(cache_fpath)
                 # 检查缓存是否有足够列（防止版本升级后缺列）
-                required_cols = {"zhixing_fast", "zhixing_slow", "vol_rank_pct",
-                                 "price_position_pct", "pocket_pivot_vol"}
-                if required_cols.issubset(set(df.columns)):
+                check_cols = {"zhixing_fast", "zhixing_slow", "vol_rank_pct",
+                              "price_position_pct", "pocket_pivot_vol"}
+                if check_cols.issubset(set(df.columns)):
                     return df
             except Exception:
                 pass  # 缓存损坏，重新计算
 
-    # 未命中：加载原始数据 + 计算指标
+    # 未命中：加载原始数据 + 计算指标（始终全量，保证缓存完整）
     df = load_stock(code, ktype)
     if len(df) < 60:
         return df
 
-    df = compute_all_indicators(df)
+    df = compute_all_indicators(df, required_cols=None)  # 始终全量，缓存完整
 
     # 写入缓存
     try:

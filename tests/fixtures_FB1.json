@@ -1,0 +1,338 @@
+[
+  {
+    "code": "600104",
+    "buy_date": "2015-09-15",
+    "sell_date": "2017-05-24",
+    "profit_pct": 79.76,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "000776",
+    "buy_date": "2015-09-15",
+    "sell_date": "2016-01-27",
+    "profit_pct": 6.1,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "600028",
+    "buy_date": "2016-01-11",
+    "sell_date": "2020-05-25",
+    "profit_pct": 12.37,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "601988",
+    "buy_date": "2016-01-11",
+    "sell_date": "2016-09-20",
+    "profit_pct": -6.83,
+    "sell_reason": "超期250天"
+  },
+  {
+    "code": "601668",
+    "buy_date": "2016-01-20",
+    "sell_date": "2016-11-29",
+    "profit_pct": 96.97,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "000338",
+    "buy_date": "2016-03-07",
+    "sell_date": "2017-07-20",
+    "profit_pct": 79.71,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600011",
+    "buy_date": "2016-03-07",
+    "sell_date": "2018-07-25",
+    "profit_pct": 12.04,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "601668",
+    "buy_date": "2018-03-26",
+    "sell_date": "2018-12-04",
+    "profit_pct": -3.01,
+    "sell_reason": "超期250天"
+  },
+  {
+    "code": "000725",
+    "buy_date": "2018-07-13",
+    "sell_date": "2018-10-16",
+    "profit_pct": -25.76,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "601766",
+    "buy_date": "2018-08-20",
+    "sell_date": "2020-02-04",
+    "profit_pct": -24.66,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "601390",
+    "buy_date": "2018-08-22",
+    "sell_date": "2020-02-04",
+    "profit_pct": -29.71,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "600029",
+    "buy_date": "2018-08-22",
+    "sell_date": "2020-02-04",
+    "profit_pct": -18.52,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "601088",
+    "buy_date": "2018-08-28",
+    "sell_date": "2021-09-13",
+    "profit_pct": 60.75,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "600010",
+    "buy_date": "2018-11-01",
+    "sell_date": "2019-03-11",
+    "profit_pct": 19.62,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "600221",
+    "buy_date": "2018-11-05",
+    "sell_date": "2020-02-04",
+    "profit_pct": -28.36,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "600352",
+    "buy_date": "2018-12-26",
+    "sell_date": "2019-04-01",
+    "profit_pct": 94.45,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600104",
+    "buy_date": "2018-12-27",
+    "sell_date": "2020-03-20",
+    "profit_pct": -25.79,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "601857",
+    "buy_date": "2019-05-07",
+    "sell_date": "2020-01-14",
+    "profit_pct": -16.42,
+    "sell_reason": "超期250天"
+  },
+  {
+    "code": "601939",
+    "buy_date": "2020-02-05",
+    "sell_date": "2025-04-07",
+    "profit_pct": 77.46,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600029",
+    "buy_date": "2020-02-20",
+    "sell_date": "2022-01-07",
+    "profit_pct": 10.39,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "601111",
+    "buy_date": "2020-02-21",
+    "sell_date": "2020-10-29",
+    "profit_pct": -17.14,
+    "sell_reason": "超期250天"
+  },
+  {
+    "code": "600352",
+    "buy_date": "2020-02-21",
+    "sell_date": "2021-09-15",
+    "profit_pct": 10.99,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "601669",
+    "buy_date": "2020-03-02",
+    "sell_date": "2021-08-06",
+    "profit_pct": 33.86,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "000157",
+    "buy_date": "2020-04-01",
+    "sell_date": "2020-12-03",
+    "profit_pct": 87.32,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600390",
+    "buy_date": "2020-07-17",
+    "sell_date": "2021-07-22",
+    "profit_pct": -25.67,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "600011",
+    "buy_date": "2021-03-05",
+    "sell_date": "2021-09-24",
+    "profit_pct": 98.67,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600340",
+    "buy_date": "2021-03-09",
+    "sell_date": "2021-05-06",
+    "profit_pct": -31.14,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "000157",
+    "buy_date": "2021-08-04",
+    "sell_date": "2022-04-22",
+    "profit_pct": -26.24,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "600048",
+    "buy_date": "2021-08-10",
+    "sell_date": "2023-10-20",
+    "profit_pct": 13.13,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "600926",
+    "buy_date": "2021-08-10",
+    "sell_date": "2023-12-19",
+    "profit_pct": -17.76,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "600061",
+    "buy_date": "2021-08-24",
+    "sell_date": "2022-04-26",
+    "profit_pct": -27.72,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "601872",
+    "buy_date": "2021-08-26",
+    "sell_date": "2022-08-17",
+    "profit_pct": 86.04,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "600489",
+    "buy_date": "2021-08-27",
+    "sell_date": "2024-03-13",
+    "profit_pct": 40.01,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "600011",
+    "buy_date": "2022-04-26",
+    "sell_date": "2024-09-12",
+    "profit_pct": -6.14,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "600028",
+    "buy_date": "2022-09-27",
+    "sell_date": "2024-08-28",
+    "profit_pct": 81.38,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "000100",
+    "buy_date": "2022-10-13",
+    "sell_date": "2025-12-31",
+    "profit_pct": 29.53,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "000725",
+    "buy_date": "2022-10-13",
+    "sell_date": "2025-12-31",
+    "profit_pct": 26.16,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "600332",
+    "buy_date": "2022-10-19",
+    "sell_date": "2025-12-31",
+    "profit_pct": 2.07,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "600089",
+    "buy_date": "2022-11-07",
+    "sell_date": "2024-09-11",
+    "profit_pct": -24.93,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "000063",
+    "buy_date": "2022-11-07",
+    "sell_date": "2023-06-21",
+    "profit_pct": 88.31,
+    "sell_reason": "止盈+80%"
+  },
+  {
+    "code": "000776",
+    "buy_date": "2022-11-07",
+    "sell_date": "2024-07-09",
+    "profit_pct": -18.81,
+    "sell_reason": "移动止损-35%"
+  },
+  {
+    "code": "600109",
+    "buy_date": "2022-11-07",
+    "sell_date": "2024-10-10",
+    "profit_pct": 20.19,
+    "sell_reason": "高位出货"
+  },
+  {
+    "code": "000001",
+    "buy_date": "2023-08-29",
+    "sell_date": "2025-12-31",
+    "profit_pct": 14.56,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "002460",
+    "buy_date": "2023-10-23",
+    "sell_date": "2024-02-05",
+    "profit_pct": -29.48,
+    "sell_reason": "止损-25%"
+  },
+  {
+    "code": "000338",
+    "buy_date": "2024-10-10",
+    "sell_date": "2025-12-31",
+    "profit_pct": 27.58,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "601233",
+    "buy_date": "2024-10-10",
+    "sell_date": "2025-12-31",
+    "profit_pct": 38.23,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "000786",
+    "buy_date": "2025-11-24",
+    "sell_date": "2025-12-31",
+    "profit_pct": -1.26,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "000651",
+    "buy_date": "2025-12-02",
+    "sell_date": "2025-12-31",
+    "profit_pct": -1.69,
+    "sell_reason": "回测结束平仓"
+  }
+]

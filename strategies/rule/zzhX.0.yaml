@@ -1,0 +1,21 @@
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+entry_ladder:
+- trigger_pct: 0
+  weight: 50
+k_type: daily
+max_hold_days: 0
+name: zzhX.0
+sell_execution: next_day
+sell_price_type: avg
+state_machine: zzh1.0
+state_machine_params:
+  entry_stabilize_days: 10
+  high_pos_pct: 95
+  low_pos_pct: 30
+  support_stuck: 99
+  trend_broken_days: 30
+  vol_rank_pct: 100
+stop_loss_pct: 15

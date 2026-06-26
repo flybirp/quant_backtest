@@ -1,0 +1,29 @@
+"""Run RS10 on full pool (5062 stocks)."""
+import sys, time, yaml, os, json
+sys.path.insert(0, '.')
+from backend.main import _config_from_dict
+from backend.backtest_engine import run_backtest
+
+codes = [f.replace('.csv','') for f in sorted(os.listdir('/Users/flybirp/Documents/mainland_data_2014')) if f.endswith('.csv')]
+print(f'RS10全量: {len(codes)} stocks', flush=True)
+
+with open('strategies/rule/恐慌错杀-狙击_r13.yaml') as f: raw = yaml.safe_load(f)
+raw['buy_groups'][0]['conditions'][1] = {'indicator': 'relative_strength', 'params': {'lookback': 10, 'threshold': 2}}
+raw['buy_groups'][0]['conditions'][2]['params']['ratio'] = 2.0
+raw['stock_pool'] = codes
+raw['name'] = 'RS10_FULL'
+c = _config_from_dict(raw)
+
+t0 = time.time()
+r = run_backtest(c, '2014-01-01', '2025-12-31')
+t = time.time() - t0
+
+d = r.__dict__
+print(f'RS10全量: EV={d["expected_value"]:.2f}% Win={d["win_rate"]:.1f}% Trade={d["total_trades"]} Time={t:.0f}s', flush=True)
+
+json.dump({
+    'trades': [x.__dict__ if hasattr(x, '__dict__') else x for x in r.trades],
+    'equity_curve': r.equity_curve,
+    'summary': {k: v for k, v in d.items() if k not in ('trades', 'equity_curve', 'annual_returns', 'monthly_returns')}
+}, open('results/RS10_全量.json', 'w'), default=str)
+print('Saved.', flush=True)

@@ -36,6 +36,30 @@ _resuts: dict[str, BacktestResult] = {}
 STRATEGIES_DIR = Path(__file__).parent.parent / "strategies"
 
 
+def _resolve_strategy_path(name: str) -> Path | None:
+    """根据策略名查找 YAML 文件位置。
+
+    查找顺序:
+      1. strategies/rule/{name}.yaml
+      2. strategies/ml/{name}.yaml
+      3. strategies/{name}.yaml (legacy)
+
+    返回第一个找到的路径，或 None。
+    """
+    base = STRATEGIES_DIR
+    candidates = [
+        base / "rule" / f"{name}.yaml",
+        base / "ml" / f"{name}.yaml",
+        base / f"{name}.yaml",  # legacy flat directory
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return None
+
+
+
+
 class StrategySaveRequest(BaseModel):
     name: str
     config: dict
@@ -74,9 +98,11 @@ def _config_from_dict(d: dict) -> StrategyConfig:
     """从字典构建 StrategyConfig"""
     return StrategyConfig(
         name=d.get("name", "default"),
+        strategy_type=d.get("strategy_type", "rule"),
         k_type=d.get("k_type", "daily"),
         backtest_mode=d.get("backtest_mode", "signal"),
         initial_capital=d.get("initial_capital", 100000),
+        # ── 规则型 ──
         buy_groups=d.get("buy_groups", []),
         sell_groups=d.get("sell_groups", []),
         add_groups=d.get("add_groups", []),
@@ -98,8 +124,23 @@ def _config_from_dict(d: dict) -> StrategyConfig:
         sell_execution=d.get("sell_execution", "same_day"),
         commission_rate=d.get("commission_rate", 0.0003),
         stamp_tax_rate=d.get("stamp_tax_rate", 0.001),
+        slippage_pct=d.get("slippage_pct", 0.001),
+        limit_filter=d.get("limit_filter", True),
         entry_ladder=d.get("entry_ladder", []),
         exit_ladder=d.get("exit_ladder", []),
+        state_machine=d.get("state_machine", ""),
+        state_machine_params=d.get("state_machine_params", {}),
+        exclusive_lock=d.get("exclusive_lock", True),
+        # ── ML 型 ──
+        factor_list=d.get("factor_list", []),
+        model_type=d.get("model_type", ""),
+        model_path=d.get("model_path", ""),
+        label_type=d.get("label_type", "future_return_5d"),
+        label_horizon_days=d.get("label_horizon_days", 5),
+        lookback_days=d.get("lookback_days", 252),
+        rebalance_freq=d.get("rebalance_freq", "weekly"),
+        top_n=d.get("top_n", 20),
+        model_params=d.get("model_params", {}),
     )
 
 

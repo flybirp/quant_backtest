@@ -1,0 +1,17 @@
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+k_type: daily
+name: zzh7.3_value_test
+sell_execution: next_day
+sell_price_type: avg
+state_machine: zzh1.0
+state_machine_params:
+  entry_stabilize_days: 7
+  high_pos_pct: 95
+  low_pos_pct: 99
+  support_stuck: 99
+  trend_broken_days: 30
+  vol_rank_pct: 99
+stock_pool: []
+stop_loss_pct: 15

@@ -38,12 +38,19 @@ class Trade:
 
 @dataclass
 class StrategyConfig:
-    """策略配置"""
+    """策略配置
+
+    strategy_type:
+        'rule' — 规则型策略（条件组 + 状态机），默认
+        'ml'   — 多因子机器学习型策略
+    """
     name: str = "default"
+    strategy_type: str = "rule"  # 'rule' | 'ml'
     k_type: str = "daily"  # daily / weekly
     backtest_mode: str = "signal"  # signal(信号纯评估) / portfolio(资金组合)
     initial_capital: float = 100000
 
+    # ── 规则型字段 ──
     # 买入条件：多个group之间OR，group内AND
     buy_groups: list[dict] = field(default_factory=list)
     # 卖出条件：同上（清仓）
@@ -66,6 +73,7 @@ class StrategyConfig:
     take_profit_pct: float = 15.0  # 止盈线 %
     max_hold_days: int = 0  # 最大持仓天数，0=不限制
     trailing_stop_pct: float = 0.0  # 移动止损（从最高点回落%），0=不启用
+    trailing_stop_tiers: dict[float, float] = field(default_factory=dict)  # {profit%: trail%} e.g. {0:25, 50:15}
 
     # 过滤条件
     min_volume_ratio: float = 0.0  # 最小成交量相对20日均量比
@@ -77,9 +85,18 @@ class StrategyConfig:
     buy_execution: str = "same_day"  # same_day / next_day（T+1执行）
     sell_execution: str = "same_day" # 同上
 
+    # 状态机策略（优先级高于 buy/sell/add/reduce groups）
+    state_machine: str = ""  # 空=使用传统条件组模式
+    state_machine_params: dict = field(default_factory=dict)
+
+    # 排他锁：同一标的已有持仓时是否阻止开新仓（默认开启）
+    exclusive_lock: bool = True
+
     # 交易成本
     commission_rate: float = 0.0003   # 佣金费率（买卖双向），默认万三
     stamp_tax_rate: float = 0.001     # 印花税费率（仅卖出），默认千一
+    slippage_pct: float = 0.001       # 滑点（买卖双向），默认千一，0=不启用
+    limit_filter: bool = True         # 涨跌停过滤：涨停无法买入，跌停无法卖出
 
     # 分批建仓 (Entry Ladder)
     # 每层: {"trigger_pct": float, "weight": int}
@@ -97,6 +114,26 @@ class StrategyConfig:
     #   → 浮盈+5%时卖出50%，浮盈+10%时再卖出剩余的50%（即总仓位的25%）
     #   最后剩余25%由trailing_stop/止盈止损/卖出信号管理
     exit_ladder: list[dict] = field(default_factory=list)
+
+    # ── ML 型字段 ──
+    # 因子列表：每个因子包含 name, lookback_days, transform (zscore/rank/raw)
+    factor_list: list[dict] = field(default_factory=list)
+    # 模型类型：'linear', 'xgboost', 'lightgbm', 'mlp'
+    model_type: str = ""
+    # 模型文件路径（训练后保存）
+    model_path: str = ""
+    # 标签定义：'future_return_5d', 'future_return_20d', 'binary_up_down'
+    label_type: str = "future_return_5d"
+    # 标签前瞻天数
+    label_horizon_days: int = 5
+    # 特征回溯窗口天数
+    lookback_days: int = 252
+    # 调仓频率：'daily', 'weekly', 'monthly'
+    rebalance_freq: str = "weekly"
+    # 选股数量（top N by predicted score）
+    top_n: int = 20
+    # 训练参数（传给具体模型的超参）
+    model_params: dict = field(default_factory=dict)
 
 
 def resolve_price(df: pd.DataFrame, idx: int, price_type: str) -> float:
@@ -310,6 +347,69 @@ def check_condition(df: pd.DataFrame, idx: int, cond: dict) -> bool:
                 if df["close"].iloc[idx - i + 1] >= df["close"].iloc[idx - i]:
                     return False
             return True
+
+        if indicator == "under_slow_days":
+            """连续N天收盘价低于zhixing_slow"""
+            n = params.get("days", 3)
+            if idx < n:
+                return False
+            for i in range(n):
+                if df["close"].iloc[idx - i] >= df["zhixing_slow"].iloc[idx - i]:
+                    return False
+            return True
+
+        if indicator == "stabilized":
+            """连续N天未创新低(收盘价不低于前N日最低)"""
+            n = params.get("days", 3)
+            if idx < n:
+                return False
+            recent_low = df["low"].iloc[idx - n + 1:idx + 1].min()
+            return df["close"].iloc[idx] > recent_low * 1.01  # 高于近期低点1%以上
+
+        # === 个股恐慌指标(discover.md) ===
+
+        if indicator == "amplitude_gt":
+            """当日振幅 > 阈值"""
+            threshold = params.get("threshold", 6.0)
+            amp = (df["high"].iloc[idx] - df["low"].iloc[idx]) / df["close"].iloc[idx] * 100
+            return amp > threshold
+
+        if indicator == "stock_deep_dd":
+            """个股120天内最大跌幅 > 阈值"""
+            lookback = params.get("lookback", 120)
+            threshold = params.get("threshold", 30.0)
+            if idx < lookback:
+                return False
+            peak = df["close"].iloc[idx - lookback + 1:idx + 1].max()
+            dd = (df["close"].iloc[idx] - peak) / peak * 100
+            return dd < -threshold
+
+        if indicator == "dd_concentration":
+            """最后30天跌幅占总跌幅>60%——杀跌集中在末期"""
+            if idx < 120:
+                return False
+            total_dd_peak = df["close"].iloc[idx - 119:idx + 1].max()
+            total_dd = (df["close"].iloc[idx] - total_dd_peak) / total_dd_peak * 100
+            if total_dd >= 0:
+                return False
+            # 最后30天: 从30天前高点到现在
+            peak_30 = df["close"].iloc[idx - 29:idx + 1].max()
+            dd_30 = (df["close"].iloc[idx] - peak_30) / peak_30 * 100
+            ratio = params.get("ratio", 60.0)
+            return abs(dd_30) / abs(total_dd) * 100 > ratio
+
+        if indicator == "volume_contracting":
+            """前短窗口均量 < 前长窗口均量 × ratio"""
+            short = params.get("short_window", 30)
+            long = params.get("long_window", 60)
+            ratio = params.get("ratio", 0.7)
+            if idx < long + short:
+                return False
+            vol_short = df["volume"].iloc[idx - short:idx].mean()
+            vol_long = df["volume"].iloc[idx - long - short:idx - short].mean()
+            if vol_long == 0:
+                return False
+            return vol_short < vol_long * ratio
 
         # === 涨跌幅 ===
         if indicator == "pct_change_gt":
@@ -787,7 +887,7 @@ def check_condition(df: pd.DataFrame, idx: int, cond: dict) -> bool:
                 return False
             if check_window > 0:
                 # 宽松模式: 在最近window天内，至少days天fast<slow
-                start = max(60, idx - check_window + 1)
+                start = max(0, idx - check_window + 1)
                 count = sum(1 for i in range(start, idx + 1)
                            if df["zhixing_fast"].iloc[i] < df["zhixing_slow"].iloc[i])
                 return count >= n_days
@@ -977,6 +1077,166 @@ def check_condition(df: pd.DataFrame, idx: int, cond: dict) -> bool:
                 if df["close"].iloc[idx - i] >= df["zhixing_slow"].iloc[idx - i]:
                     return False
             return True
+
+        # ================================================================
+        # === zzh1.0 新增指标 ===
+        # ================================================================
+
+        # --- Buying Climax (BC) 天量长上影派发 ---
+        # 高位 + 极端天量 + 长上影线 = 主力派发/买盘枯竭
+        if indicator == "buying_climax":
+            vol_rank_threshold = params.get("vol_rank_threshold", 95)
+            wick_ratio = params.get("wick_ratio", 0.35)
+            position_threshold = params.get("position_threshold", 60)
+            min_pct = params.get("min_pct", -2.0)
+            if idx < 60:
+                return False
+            # 量不够大 → 不是BC
+            if df["vol_rank_pct"].iloc[idx] < vol_rank_threshold:
+                return False
+            # 位置不够高 → 不是派发
+            if df["price_position_pct"].iloc[idx] < position_threshold:
+                return False
+            # 暴跌日 → 不是BC（BC是高位诱多）
+            if df["pct_change"].iloc[idx] < min_pct:
+                return False
+            # 计算上影线占比
+            high_val = df["high"].iloc[idx]
+            low_val = df["low"].iloc[idx]
+            open_val = df["open"].iloc[idx]
+            close_val = df["close"].iloc[idx]
+            full_range = high_val - low_val
+            if full_range <= 0:
+                return False
+            body_high = max(open_val, close_val)
+            upper_wick = high_val - body_high
+            return (upper_wick / full_range) >= wick_ratio
+
+        # --- Repeated Slow Touch 反复测试slow支撑 ---
+        # 短时间内多次回踩slow线 → 多头信心耗尽
+        if indicator == "repeated_slow_touch":
+            lookback = params.get("lookback", 30)
+            tolerance = params.get("tolerance", 2.0)
+            min_touches = params.get("min_touches", 4)
+            if idx < lookback:
+                return False
+            touches = 0
+            for j in range(idx - lookback + 1, idx + 1):
+                slow_j = df["zhixing_slow"].iloc[j]
+                if slow_j <= 0:
+                    continue
+                dist = abs((df["close"].iloc[j] - slow_j) / slow_j * 100)
+                if dist < tolerance:
+                    touches += 1
+            return touches >= min_touches
+
+        # === 基本面 ===
+        if indicator == "pe_below":
+            threshold = params.get("threshold", 20)
+            return df["pe"].iloc[idx] < threshold
+
+        if indicator == "pe_ttm_below":
+            threshold = params.get("threshold", 20)
+            return df["pe_ttm"].iloc[idx] < threshold
+
+        if indicator == "pb_below":
+            threshold = params.get("threshold", 1.5)
+            return df["pb"].iloc[idx] < threshold
+
+        if indicator == "pe_pct_low":
+            lookback = params.get("lookback", 252)
+            threshold = params.get("threshold", 20)
+            if idx < lookback:
+                return False
+            pe_vals = df["pe"].iloc[idx - lookback + 1:idx + 1]
+            pe_vals = pe_vals[pe_vals > 0]
+            if len(pe_vals) < 60:
+                return False
+            rank = (pe_vals < df["pe"].iloc[idx]).sum() / len(pe_vals) * 100
+            return rank < threshold
+
+        if indicator == "pb_pct_low":
+            lookback = params.get("lookback", 252)
+            threshold = params.get("threshold", 20)
+            if idx < lookback:
+                return False
+            pb_vals = df["pb"].iloc[idx - lookback + 1:idx + 1]
+            pb_vals = pb_vals[pb_vals > 0]
+            if len(pb_vals) < 60:
+                return False
+            rank = (pb_vals < df["pb"].iloc[idx]).sum() / len(pb_vals) * 100
+            return rank < threshold
+
+        if indicator == "total_mv_above":
+            threshold = params.get("threshold", 100)  # 单位：亿
+            return df["total_mv"].iloc[idx] > threshold
+
+        if indicator == "total_mv_below":
+            threshold = params.get("threshold", 500)
+            return df["total_mv"].iloc[idx] < threshold
+
+        if indicator == "turnover_rate_above":
+            threshold = params.get("threshold", 3.0)  # 单位：%
+            return df["turnover_rate"].iloc[idx] > threshold
+
+        if indicator == "turnover_rate_below":
+            threshold = params.get("threshold", 1.0)
+            return df["turnover_rate"].iloc[idx] < threshold
+
+        # === 市场状态 ===
+        if indicator == "market_bull":
+            index_name = params.get("index", "hs300")
+            from backend.regime import get_regime_on
+            date_str = str(df["date"].iloc[idx])[:10]
+            return get_regime_on(date_str, index_name) == "bull"
+
+        if indicator == "market_bear":
+            index_name = params.get("index", "hs300")
+            from backend.regime import get_regime_on
+            date_str = str(df["date"].iloc[idx])[:10]
+            return get_regime_on(date_str, index_name) == "bear"
+
+        if indicator == "market_consolidation":
+            index_name = params.get("index", "hs300")
+            from backend.regime import get_regime_on
+            date_str = str(df["date"].iloc[idx])[:10]
+            return get_regime_on(date_str, index_name) == "consolidation"
+
+        # === 相对抗跌（个股 vs 大盘） ===
+        if indicator == "relative_strength":
+            threshold = params.get("threshold", 0)
+            col = f"relative_strength_{params.get('lookback', 60)}"
+            if col not in df.columns:
+                col = "relative_strength_60"
+            return df[col].iloc[idx] > threshold
+
+        if indicator == "market_crash_recent":
+            col = f"market_crash_{params.get('lookback', 30)}d"
+            if col not in df.columns:
+                col = "market_crash_30d"
+            return bool(df[col].iloc[idx])
+
+        if indicator == "market_crash_fast":
+            """10天内快速杀跌>5%"""
+            if "market_crash_fast_10d" in df.columns:
+                return bool(df["market_crash_fast_10d"].iloc[idx])
+            return False
+
+        if indicator == "zz1000_crash":
+            """中证1000在N天内回撤超过X%"""
+            days = params.get("days", 20)
+            threshold = params.get("threshold", 10.0)
+            from backend.indicators import _load_index_cached as _lic
+            zz = _lic("zz1000")
+            date_str = str(df["date"].iloc[idx])[:10]
+            end = pd.Timestamp(date_str)
+            start = end - pd.Timedelta(days=days + 5)
+            window = zz[(zz.index >= start) & (zz.index <= end)]
+            if len(window) < 5:
+                return False
+            peak = window["close"].max()
+            dd = (window["close"].iloc[-1] - peak) / peak * 100
+            return dd < -threshold
 
     except (KeyError, IndexError):
         return False
@@ -1173,6 +1433,53 @@ def check_condition_vectorized(df: pd.DataFrame, cond: dict) -> np.ndarray:
                     big_vol_rise = first_vol > vma * vol_ratio and close_arr[start + mid - 1] > close_arr[start]
                     shrink_stall = second_vol < vma * vol_shrink and close_arr[i] <= close_arr[start + mid] * 1.02
                     result[i] = big_vol_rise and shrink_stall
+
+        # --- Buying Climax 向量化 ---
+        elif indicator == "buying_climax":
+            vol_rank_threshold = params.get("vol_rank_threshold", 95)
+            wick_ratio = params.get("wick_ratio", 0.35)
+            position_threshold = params.get("position_threshold", 60)
+            min_pct = params.get("min_pct", -2.0)
+            vol_rank_arr = df["vol_rank_pct"].values
+            pos_arr = df["price_position_pct"].values
+            pct_arr = df["pct_change"].values
+            high_arr = df["high"].values
+            low_arr = df["low"].values
+            open_arr = df["open"].values
+            close_arr = df["close"].values
+            for i in range(60, n):
+                if vol_rank_arr[i] < vol_rank_threshold:
+                    continue
+                if pos_arr[i] < position_threshold:
+                    continue
+                if pct_arr[i] < min_pct:
+                    continue
+                full_range = high_arr[i] - low_arr[i]
+                if full_range <= 0:
+                    continue
+                body_high = max(open_arr[i], close_arr[i])
+                upper_wick = high_arr[i] - body_high
+                if (upper_wick / full_range) >= wick_ratio:
+                    result[i] = True
+
+        # --- Repeated Slow Touch 向量化 ---
+        elif indicator == "repeated_slow_touch":
+            lookback = params.get("lookback", 30)
+            tolerance = params.get("tolerance", 2.0)
+            min_touches = params.get("min_touches", 4)
+            slow_arr = df["zhixing_slow"].values
+            close_arr = df["close"].values
+            for i in range(lookback, n):
+                touches = 0
+                for j in range(i - lookback + 1, i + 1):
+                    slow_j = slow_arr[j]
+                    if slow_j <= 0:
+                        continue
+                    dist = abs((close_arr[j] - slow_j) / slow_j * 100)
+                    if dist < tolerance:
+                        touches += 1
+                if touches >= min_touches:
+                    result[i] = True
 
         # 未向量化条件 → 回退到逐行检测
         else:

@@ -318,75 +318,200 @@ def double_bottom_level(low: pd.Series, close: pd.Series,
     return pd.Series(result, index=low.index)
 
 
-def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    """给DataFrame附加所有常用指标，返回增强后的DataFrame"""
+def compute_all_indicators(df: pd.DataFrame, required_cols: set[str] | None = None) -> pd.DataFrame:
+    """
+    给DataFrame附加指标，返回增强后的DataFrame。
+
+    Args:
+        df: 原始OHLCV数据
+        required_cols: 需要的列名集合。None=全部计算，set=只算需要的。
+    """
     d = df.copy()
     close = d["close"]
     high = d["high"]
     low = d["low"]
     volume = d["volume"]
 
+    need = required_cols  # None = 全算
+
+    def _need(col: str) -> bool:
+        return need is None or col in need
+
     # 均线
     for p in [5, 10, 20, 30, 60, 120, 250]:
-        d[f"ma{p}"] = sma(close, p)
+        if _need(f"ma{p}"):
+            d[f"ma{p}"] = sma(close, p)
 
     # MACD
-    macd_df = macd(close)
-    d["macd_dif"] = macd_df["dif"]
-    d["macd_dea"] = macd_df["dea"]
-    d["macd_bar"] = macd_df["bar"]
+    if _need("macd_dif") or _need("macd_dea") or _need("macd_bar"):
+        macd_df = macd(close)
+        if _need("macd_dif"):
+            d["macd_dif"] = macd_df["dif"]
+        if _need("macd_dea"):
+            d["macd_dea"] = macd_df["dea"]
+        if _need("macd_bar"):
+            d["macd_bar"] = macd_df["bar"]
 
     # RSI
-    d["rsi14"] = rsi(close, 14)
-    d["rsi6"] = rsi(close, 6)
+    if _need("rsi14"):
+        d["rsi14"] = rsi(close, 14)
+    if _need("rsi6"):
+        d["rsi6"] = rsi(close, 6)
 
     # KDJ
-    kdj_df = kdj(high, low, close)
-    d["kdj_k"] = kdj_df["k"]
-    d["kdj_d"] = kdj_df["d"]
-    d["kdj_j"] = kdj_df["j"]
+    if _need("kdj_k") or _need("kdj_d") or _need("kdj_j"):
+        kdj_df = kdj(high, low, close)
+        if _need("kdj_k"):
+            d["kdj_k"] = kdj_df["k"]
+        if _need("kdj_d"):
+            d["kdj_d"] = kdj_df["d"]
+        if _need("kdj_j"):
+            d["kdj_j"] = kdj_df["j"]
 
     # 布林带
-    bb_df = bollinger(close)
-    d["bb_upper"] = bb_df["upper"]
-    d["bb_mid"] = bb_df["mid"]
-    d["bb_lower"] = bb_df["lower"]
+    if _need("bb_upper") or _need("bb_mid") or _need("bb_lower"):
+        bb_df = bollinger(close)
+        if _need("bb_upper"):
+            d["bb_upper"] = bb_df["upper"]
+        if _need("bb_mid"):
+            d["bb_mid"] = bb_df["mid"]
+        if _need("bb_lower"):
+            d["bb_lower"] = bb_df["lower"]
 
     # ATR
-    d["atr14"] = atr(high, low, close, 14)
+    if _need("atr14"):
+        d["atr14"] = atr(high, low, close, 14)
 
     # 成交量均线
-    d["vol_ma20"] = volume_ma(volume, 20)
+    if _need("vol_ma20"):
+        d["vol_ma20"] = volume_ma(volume, 20)
 
     # 涨跌幅
-    d["pct_change"] = close.pct_change() * 100
+    if _need("pct_change"):
+        d["pct_change"] = close.pct_change() * 100
 
     # 知行量化指标
-    d["zhixing_fast"] = zhixing_fast(close)
-    d["zhixing_slow"] = zhixing_slow(close)
-    d["zz_short"] = zz_short(high, low, close)
-    d["zz_long"] = zz_long(high, low, close)
-    d["zz_spread"] = d["zz_long"] - d["zz_short"]
+    if _need("zhixing_fast"):
+        d["zhixing_fast"] = zhixing_fast(close)
+    if _need("zhixing_slow"):
+        d["zhixing_slow"] = zhixing_slow(close)
+    if _need("zz_short") or _need("zz_long") or _need("zz_spread"):
+        d["zz_short"] = zz_short(high, low, close)
+        d["zz_long"] = zz_long(high, low, close)
+        d["zz_spread"] = d["zz_long"] - d["zz_short"]
 
     # 量能异动指标
-    d["vol_rank_pct"] = volume_rank_pct(volume, 120)
-    d["price_position_pct"] = price_position_pct(close, 120)
-    d["dist_to_ma60"] = dist_to_line(close, d["ma60"])
-    d["dist_to_zhixing_fast"] = dist_to_line(close, d["zhixing_fast"])
-    d["dist_to_zhixing_slow"] = dist_to_line(close, d["zhixing_slow"])
-    d["is_double_vol"] = is_double_volume_signal(volume)
-    d["is_vol_top5"] = is_volume_top5(volume, 120)
-    d["pocket_pivot_vol"] = pocket_pivot_volume(volume, close, 10)
+    if _need("vol_rank_pct"):
+        d["vol_rank_pct"] = volume_rank_pct(volume, 120)
+    if _need("price_position_pct"):
+        d["price_position_pct"] = price_position_pct(close, 120)
+    if _need("dist_to_ma60") and "ma60" in d:
+        d["dist_to_ma60"] = dist_to_line(close, d["ma60"])
+    if _need("dist_to_zhixing_fast") and "zhixing_fast" in d:
+        d["dist_to_zhixing_fast"] = dist_to_line(close, d["zhixing_fast"])
+    if _need("dist_to_zhixing_slow") and "zhixing_slow" in d:
+        d["dist_to_zhixing_slow"] = dist_to_line(close, d["zhixing_slow"])
+    if _need("is_double_vol"):
+        d["is_double_vol"] = is_double_volume_signal(volume)
+    if _need("is_vol_top5"):
+        d["is_vol_top5"] = is_volume_top5(volume, 120)
+    if _need("pocket_pivot_vol"):
+        d["pocket_pivot_vol"] = pocket_pivot_volume(volume, close, 10)
 
     # BBI 多空指标
-    d["bbi"] = bbi(close)
+    if _need("bbi"):
+        d["bbi"] = bbi(close)
 
-    # 双底形态支撑位（默认参数，策略中可通过参数覆盖）
-    d["double_bottom_support"] = double_bottom_level(low, close, lookback=20, min_separation=3, tolerance_pct=3.0)
+    # 双底形态支撑位
+    if _need("double_bottom_support"):
+        d["double_bottom_support"] = double_bottom_level(low, close, lookback=20, min_separation=3, tolerance_pct=3.0)
 
-    # 量能爆发标记（默认参数）
-    d["vol_explosion"] = volume_explosion_flag(volume, close,
-                                                d["vol_rank_pct"], d["vol_ma20"],
-                                                vol_rank_threshold=95, vol_ratio_threshold=3.0)
+    # 量能爆发标记
+    if _need("vol_explosion"):
+        d["vol_explosion"] = volume_explosion_flag(volume, close,
+                                                    d.get("vol_rank_pct", volume_rank_pct(volume, 120)),
+                                                    d.get("vol_ma20", volume_ma(volume, 20)),
+                                                    vol_rank_threshold=95, vol_ratio_threshold=3.0)
+
+    # 相对大盘强度
+    for lb in [5, 10, 20, 60]:
+        col = f"relative_strength_{lb}"
+        if _need(col):
+            d[col] = _compute_relative_strength(d, lookback=lb)
+
+    # 大盘恐慌
+    if _need("market_crash_30d"):
+        d["market_crash_30d"] = _compute_market_crash_flag(d, lookback=30)
+    if _need("market_crash_fast_10d"):
+        d["market_crash_fast_10d"] = _compute_fast_crash_flag(d)
 
     return d
+
+
+def _compute_fast_crash_flag(df: pd.DataFrame) -> "pd.Series":
+    """10天内hs300是否快速杀跌超过5%。向量化+日期对齐。"""
+    try:
+        idx_df = _load_index_cached("hs300")
+        dd10 = (idx_df["close"] / idx_df["close"].rolling(10).max() - 1) * 100
+        crash_any = (dd10 < -5.0).rolling(10, min_periods=1).max().fillna(0).astype(bool)
+        # 按日期对齐（不同股票上市日期不同，不能用位置）
+        aligned = crash_any.reindex(df["date"], method="ffill").fillna(False)
+        aligned.index = df.index
+        return aligned
+    except Exception:
+        return pd.Series([False] * len(df), index=df.index)
+
+
+# Module-level cache for hs300 index data
+_idx_cache: dict = {}
+
+
+def _load_index_cached(name: str = "hs300") -> "pd.DataFrame":
+    """Load index once, cache across all calls."""
+    if name not in _idx_cache:
+        from pathlib import Path
+        import pandas as pd
+        idx_path = Path(f"/Users/flybirp/Documents/mainland_index_data_2014/{name}.csv")
+        _idx_cache[name] = pd.read_csv(idx_path, parse_dates=["date"]).set_index("date").sort_index()
+    return _idx_cache[name]
+
+
+def _compute_relative_strength(df: pd.DataFrame, lookback: int = 60) -> pd.Series:
+    """个股相对于hs300的超额收益。正数=跑赢大盘。按位置对齐。"""
+    try:
+        idx_df = _load_index_cached("hs300")
+
+        # Stock rolling return (按行位置)
+        stock_ret = (df["close"] / df["close"].shift(lookback) - 1) * 100
+
+        # Index rolling return: 提前算好，按行数对齐（不用reindex）
+        idx_close = idx_df["close"]
+        idx_ret_full = (idx_close / idx_close.shift(lookback) - 1) * 100
+        # 对齐：取前 len(df) 行（所有股票交易日历相同）
+        idx_aligned = idx_ret_full.iloc[:len(df)].values
+
+        rs = pd.Series(stock_ret.values - idx_aligned, index=df.index).fillna(0.0)
+        return rs
+    except Exception:
+        return pd.Series([0.0] * len(df), index=df.index)
+
+
+def _compute_market_crash_flag(df: pd.DataFrame, lookback: int = 30) -> pd.Series:
+    """近N天内hs300最大回撤是否超10%。按位置对齐。"""
+    try:
+        idx_df = _load_index_cached("hs300")
+
+        # 提前算好指数回撤
+        peak252 = idx_df["close"].rolling(252).max()
+        dd252 = (idx_df["close"] - peak252) / peak252 * 100
+
+        # 按行数对齐
+        aligned = dd252.iloc[:len(df)].values
+        result = pd.Series(aligned < -10.0, index=df.index)
+        return result
+    except Exception:
+        return pd.Series([False] * len(df), index=df.index)
+        result.index = df.index  # align to caller's index
+        return result
+    except Exception:
+        return pd.Series([False] * len(df), index=df.index)

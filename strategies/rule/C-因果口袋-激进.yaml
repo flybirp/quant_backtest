@@ -1,0 +1,59 @@
+add_groups: []
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: sideway_shrink
+    params:
+      amplitude: 5.0
+      days: 5
+      vol_ratio: 0.5
+  - indicator: pocket_pivot
+    params:
+      lookback: 10
+  - indicator: zhixing_golden_cross
+    params: {}
+buy_price_type: open
+k_type: daily
+max_hold_days: 30
+name: C-因果口袋-激进
+reduce_groups: []
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+sell_price_type: avg
+stock_pool:
+- '000001'
+- '000002'
+- '000063'
+- '000333'
+- 000538
+- '000651'
+- '000725'
+- 000858
+- 000895
+- '002027'
+- 002049
+- '002230'
+- '002241'
+- '002304'
+- '002415'
+- '002475'
+- 002594
+- '300014'
+- '300015'
+- '300033'
+- '300124'
+- '300408'
+- '300433'
+- '300496'
+- '600000'
+- '600009'
+- '600016'
+- '600019'
+- '600028'
+- '600036'
+stop_loss_pct: 3
+take_profit_pct: 25
+trailing_stop_pct: 10

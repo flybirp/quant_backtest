@@ -1,0 +1,55 @@
+# ============================================================
+# ML 型策略模板
+#
+# strategy_type: ml  → 使用多因子机器学习引擎
+# strategy_type: rule → 使用传统条件组 + 状态机引擎 (默认)
+# ============================================================
+
+name: ml_demo
+strategy_type: ml
+k_type: daily
+backtest_mode: signal
+initial_capital: 100000
+
+# ── 因子定义 ──
+factor_list:
+  - name: momentum_20d
+    lookback_days: 20
+    transform: zscore
+  - name: volatility_20d
+    lookback_days: 20
+    transform: zscore
+  - name: volume_ratio
+    lookback_days: 20
+    transform: zscore
+  - name: rsi_14
+    lookback_days: 14
+    transform: raw
+  - name: price_position
+    lookback_days: 60
+    transform: zscore
+
+# ── 模型配置 ──
+model_type: xgboost           # linear / xgboost / lightgbm / mlp
+label_type: future_return_5d  # 标签：预测未来5日收益
+label_horizon_days: 5
+lookback_days: 252            # 特征回溯窗口
+
+# ── 交易执行 ──
+rebalance_freq: weekly        # 调仓频率
+top_n: 20                     # 每期选股数量
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: open
+
+# ── 风控 ──
+stop_loss_pct: 10
+max_hold_days: 20
+
+# ── 超参数 (传给模型训练) ──
+model_params:
+  max_depth: 5
+  learning_rate: 0.05
+  n_estimators: 200
+  subsample: 0.8

@@ -1,0 +1,68 @@
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: market_crash_recent
+  - indicator: relative_strength
+    params:
+      lookback: 60
+      threshold: 12
+  - indicator: volume_anomaly
+    params:
+      ratio: 2.2
+  - indicator: not_distribution
+  - indicator: pe_ttm_below
+    params:
+      threshold: 30
+  - indicator: total_mv_above
+    params:
+      threshold: 300
+  - indicator: pb_below
+    params:
+      threshold: 2.0
+  - indicator: pe_pct_low
+    params:
+      lookback: 252
+      threshold: 30
+  name: 恐慌后狙击
+buy_price_type: open
+k_type: daily
+max_hold_days: 250
+name: 恐慌错杀-狙击_r11
+reduce_groups:
+- conditions:
+  - indicator: rsi_overbought
+    params:
+      period: 14
+      threshold: 70
+  - indicator: volume_anomaly
+    params:
+      ratio: 1.3
+  name: 分批止盈
+reduce_pct: 0.5
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: rsi_overbought
+    params:
+      period: 14
+      threshold: 70
+  - indicator: volume_anomaly
+    params:
+      ratio: 1.5
+  - indicator: pct_change_lt
+    params:
+      pct: -3
+  - indicator: under_slow_days
+    params:
+      days: 3
+  name: 高位出货
+sell_price_type: avg
+stop_loss_pct: 25
+take_profit_pct: 80
+trailing_stop_pct: 25
+trailing_stop_tiers:
+  0: 25
+  20: 20
+  40: 15
+  60: 10

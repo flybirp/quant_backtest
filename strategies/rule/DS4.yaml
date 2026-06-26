@@ -1,0 +1,42 @@
+name: DS4_个股恐慌
+k_type: daily
+backtest_mode: signal
+_pool: 大蓝筹
+buy_execution: next_day
+sell_execution: next_day
+buy_price_type: open
+sell_price_type: avg
+stop_loss_pct: 25
+take_profit_pct: 80
+trailing_stop_pct: 35
+max_hold_days: 250
+
+buy_groups:
+  - name: 个股恐慌
+    conditions:
+      - indicator: stock_deep_dd
+        params: {lookback: 120, threshold: 30}
+      - indicator: dd_concentration
+        params: {ratio: 60}
+      - indicator: volume_contracting
+        params: {short_window: 30, long_window: 60, ratio: 0.7}
+      - indicator: volume_anomaly
+        params: {ratio: 2.0}
+      - indicator: amplitude_gt
+        params: {threshold: 6}
+      - indicator: pe_ttm_below
+        params: {threshold: 30}
+      - indicator: pb_below
+        params: {threshold: 2.0}
+      - indicator: total_mv_above
+        params: {threshold: 300}
+
+sell_groups:
+  - name: 高位出货
+    conditions:
+      - indicator: rsi_overbought
+        params: {period: 14, threshold: 70}
+      - indicator: volume_anomaly
+        params: {ratio: 1.5}
+      - indicator: pct_change_lt
+        params: {pct: -3}

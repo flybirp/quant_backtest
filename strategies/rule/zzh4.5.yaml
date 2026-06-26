@@ -1,0 +1,21 @@
+# zzh4.5 — 无低位+严格再入场+精选
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+entry_ladder:
+- trigger_pct: 0
+  weight: 50
+k_type: daily
+max_hold_days: 0
+name: zzh4.5
+sell_execution: next_day
+sell_price_type: avg
+state_machine: zzh1.0
+state_machine_params:
+  entry_stabilize_days: 4
+  high_pos_pct: 92
+  low_pos_pct: 99
+  support_stuck: 99
+  trend_broken_days: 12
+  vol_rank_pct: 92
+stop_loss_pct: 0

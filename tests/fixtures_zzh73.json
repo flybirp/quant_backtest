@@ -1,0 +1,324 @@
+[
+  {
+    "code": "600089",
+    "buy_date": "2014-11-06",
+    "sell_date": "2014-11-12",
+    "profit_pct": 2.8,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "601328",
+    "buy_date": "2014-11-13",
+    "sell_date": "2014-12-02",
+    "profit_pct": 20.84,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "601318",
+    "buy_date": "2014-11-26",
+    "sell_date": "2014-12-02",
+    "profit_pct": 14.73,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "600016",
+    "buy_date": "2014-12-09",
+    "sell_date": "2014-12-23",
+    "profit_pct": 15.96,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "002714",
+    "buy_date": "2015-07-29",
+    "sell_date": "2015-08-24",
+    "profit_pct": -27.85,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600580",
+    "buy_date": "2015-11-06",
+    "sell_date": "2016-01-06",
+    "profit_pct": -15.04,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600867",
+    "buy_date": "2016-05-16",
+    "sell_date": "2016-07-29",
+    "profit_pct": 10.59,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "601111",
+    "buy_date": "2016-07-15",
+    "sell_date": "2017-02-27",
+    "profit_pct": -0.75,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "603918",
+    "buy_date": "2016-08-17",
+    "sell_date": "2016-09-05",
+    "profit_pct": -16.15,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600176",
+    "buy_date": "2017-03-06",
+    "sell_date": "2017-04-11",
+    "profit_pct": 9.55,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "600362",
+    "buy_date": "2017-10-19",
+    "sell_date": "2018-01-10",
+    "profit_pct": 15.56,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "601318",
+    "buy_date": "2018-01-09",
+    "sell_date": "2018-01-16",
+    "profit_pct": 11.26,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "601138",
+    "buy_date": "2019-03-27",
+    "sell_date": "2019-04-18",
+    "profit_pct": 30.79,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "600177",
+    "buy_date": "2019-03-29",
+    "sell_date": "2019-11-07",
+    "profit_pct": 13.9,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "600183",
+    "buy_date": "2019-12-19",
+    "sell_date": "2020-02-18",
+    "profit_pct": 19.47,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "600862",
+    "buy_date": "2020-03-10",
+    "sell_date": "2020-04-24",
+    "profit_pct": 12.89,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "600061",
+    "buy_date": "2020-07-13",
+    "sell_date": "2020-07-27",
+    "profit_pct": -15.11,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "603927",
+    "buy_date": "2020-07-30",
+    "sell_date": "2020-09-10",
+    "profit_pct": -28.1,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600066",
+    "buy_date": "2020-12-17",
+    "sell_date": "2021-01-25",
+    "profit_pct": -15.44,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600023",
+    "buy_date": "2021-04-20",
+    "sell_date": "2021-09-07",
+    "profit_pct": 5.67,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "600023",
+    "buy_date": "2021-09-08",
+    "sell_date": "2021-09-09",
+    "profit_pct": 11.91,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "605133",
+    "buy_date": "2021-11-26",
+    "sell_date": "2021-12-02",
+    "profit_pct": 18.41,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "605303",
+    "buy_date": "2021-12-24",
+    "sell_date": "2022-02-18",
+    "profit_pct": 5.8,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "603856",
+    "buy_date": "2022-01-12",
+    "sell_date": "2022-01-13",
+    "profit_pct": 4.59,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "605298",
+    "buy_date": "2022-03-07",
+    "sell_date": "2022-04-27",
+    "profit_pct": -17.86,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "603869",
+    "buy_date": "2023-03-08",
+    "sell_date": "2023-05-31",
+    "profit_pct": 38.7,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "601668",
+    "buy_date": "2023-05-11",
+    "sell_date": "2023-05-29",
+    "profit_pct": -14.77,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "600848",
+    "buy_date": "2023-05-18",
+    "sell_date": "2023-06-01",
+    "profit_pct": 0.33,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "600489",
+    "buy_date": "2023-07-31",
+    "sell_date": "2024-01-18",
+    "profit_pct": -17.78,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "601211",
+    "buy_date": "2023-08-22",
+    "sell_date": "2024-09-02",
+    "profit_pct": -0.27,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "601995",
+    "buy_date": "2023-12-06",
+    "sell_date": "2024-01-10",
+    "profit_pct": -15.12,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "300408",
+    "buy_date": "2024-09-19",
+    "sell_date": "2024-10-08",
+    "profit_pct": 37.01,
+    "sell_reason": "reduce_signal"
+  },
+  {
+    "code": "600177",
+    "buy_date": "2025-01-27",
+    "sell_date": "2026-06-18",
+    "profit_pct": -0.43,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "601728",
+    "buy_date": "2025-02-12",
+    "sell_date": "2025-02-18",
+    "profit_pct": 6.57,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "603501",
+    "buy_date": "2025-04-01",
+    "sell_date": "2025-09-19",
+    "profit_pct": 8.74,
+    "sell_reason": "极端BC清仓"
+  },
+  {
+    "code": "601009",
+    "buy_date": "2025-08-22",
+    "sell_date": "2026-06-18",
+    "profit_pct": -0.34,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "000538",
+    "buy_date": "2025-09-26",
+    "sell_date": "2026-06-18",
+    "profit_pct": -12.96,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "601318",
+    "buy_date": "2025-11-24",
+    "sell_date": "2025-12-18",
+    "profit_pct": 14.9,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "600340",
+    "buy_date": "2025-11-24",
+    "sell_date": "2026-01-15",
+    "profit_pct": -30.82,
+    "sell_reason": "止损-15%"
+  },
+  {
+    "code": "605117",
+    "buy_date": "2026-01-15",
+    "sell_date": "2026-02-12",
+    "profit_pct": 16.18,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "600589",
+    "buy_date": "2026-01-16",
+    "sell_date": "2026-02-12",
+    "profit_pct": 38.38,
+    "sell_reason": "止盈+15.0%"
+  },
+  {
+    "code": "000100",
+    "buy_date": "2026-02-03",
+    "sell_date": "2026-06-18",
+    "profit_pct": 5.32,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "000100",
+    "buy_date": "2026-03-17",
+    "sell_date": "2026-06-18",
+    "profit_pct": 9.0,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "600905",
+    "buy_date": "2026-03-27",
+    "sell_date": "2026-06-18",
+    "profit_pct": -8.48,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "601225",
+    "buy_date": "2026-04-10",
+    "sell_date": "2026-06-18",
+    "profit_pct": -9.25,
+    "sell_reason": "回测结束平仓"
+  },
+  {
+    "code": "600406",
+    "buy_date": "2026-05-06",
+    "sell_date": "2026-06-18",
+    "profit_pct": -11.42,
+    "sell_reason": "回测结束平仓"
+  }
+]

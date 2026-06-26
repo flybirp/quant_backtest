@@ -1,0 +1,21 @@
+# zzh1.0 — 基线
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+entry_ladder:
+- trigger_pct: 0
+  weight: 50
+k_type: daily
+max_hold_days: 60
+name: zzh1.0
+sell_execution: next_day
+sell_price_type: avg
+state_machine: zzh1.0
+state_machine_params:
+  entry_stabilize_days: 3
+  high_pos_pct: 80
+  low_pos_pct: 50
+  support_stuck: 5
+  trend_broken_days: 3
+  vol_rank_pct: 90
+stop_loss_pct: 8
