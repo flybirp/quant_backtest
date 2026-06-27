@@ -1,28 +1,34 @@
-# 周线级别趋势策略
-name: "周线趋势策略"
-k_type: weekly
+_pool: 大蓝筹
 backtest_mode: signal
-initial_capital: 100000
-
 buy_groups:
-  - conditions:
-      - indicator: ma_cross_up
-        params: {fast: 5, slow: 20}
-      - indicator: macd_golden_cross
-
-  - conditions:
-      - indicator: ma_bullish_alignment
-        params: {periods: [5, 10, 20, 30]}
-      - indicator: volume_breakout
-        params: {ratio: 1.2}
-
-sell_groups:
-  - conditions:
-      - indicator: ma_cross_down
-        params: {fast: 5, slow: 20}
-
-position_pct: 0.25
+- conditions:
+  - indicator: ma_cross_up
+    params:
+      fast: 5
+      slow: 20
+  - indicator: macd_golden_cross
+- conditions:
+  - indicator: ma_bullish_alignment
+    params:
+      periods:
+      - 5
+      - 10
+      - 20
+      - 30
+  - indicator: volume_breakout
+    params:
+      ratio: 1.2
+initial_capital: 100000
+k_type: weekly
 max_positions: 4
+name: 周线趋势策略
+position_pct: 0.25
+sell_groups:
+- conditions:
+  - indicator: ma_cross_down
+    params:
+      fast: 5
+      slow: 20
 stop_loss_pct: 8.0
 take_profit_pct: 25.0
 trailing_stop_pct: 10.0

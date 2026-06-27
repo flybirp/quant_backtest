@@ -1,3 +1,4 @@
+_pool: 大蓝筹
 backtest_mode: signal
 buy_execution: next_day
 buy_groups:

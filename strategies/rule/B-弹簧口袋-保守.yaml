@@ -1,3 +1,4 @@
+_pool: 大蓝筹
 add_groups:
 - conditions:
   - indicator: price_near_zhixing

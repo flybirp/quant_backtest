@@ -1,4 +1,4 @@
-# zzh1.9 — 去掉支撑衰竭，只靠BC+趋势破坏
+_pool: 大蓝筹
 backtest_mode: signal
 buy_execution: next_day
 buy_price_type: open

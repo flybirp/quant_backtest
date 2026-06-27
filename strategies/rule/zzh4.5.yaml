@@ -1,4 +1,4 @@
-# zzh4.5 — 无低位+严格再入场+精选
+_pool: 大蓝筹
 backtest_mode: signal
 buy_execution: next_day
 buy_price_type: open

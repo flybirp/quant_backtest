@@ -1,3 +1,4 @@
+_pool: 大蓝筹
 add_groups:
 - conditions:
   - indicator: zhixing_golden_cross_hold

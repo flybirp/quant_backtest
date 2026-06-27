@@ -1,31 +1,33 @@
-name: "横盘缩量突破"
-k_type: daily
+_pool: 大蓝筹
 backtest_mode: signal
-initial_capital: 100000
-
-# 逻辑：上涨后横盘+极致缩量 → 洗盘结束 → 放量突破买入
 buy_groups:
-  # 横盘缩量+放量突破（温和放量即可）
-  - conditions:
-      - indicator: sideway_shrink
-        params: {days: 3, amplitude: 3.0, vol_ratio: 0.4}
-      - indicator: volume_anomaly
-        params: {ratio: 1.5}
-      - indicator: zhixing_fast_above_slow
-
-  # 横盘+极致缩量+KDJ低位（无需放量，等启动）
-  - conditions:
-      - indicator: sideway_shrink
-        params: {days: 3, amplitude: 3.0, vol_ratio: 0.2}
-      - indicator: kdj_j_oversold
-        params: {threshold: 30}
-
-sell_groups:
-  - conditions:
-      - indicator: zhixing_dead_cross
-
-position_pct: 0.3
+- conditions:
+  - indicator: sideway_shrink
+    params:
+      amplitude: 3.0
+      days: 3
+      vol_ratio: 0.4
+  - indicator: volume_anomaly
+    params:
+      ratio: 1.5
+  - indicator: zhixing_fast_above_slow
+- conditions:
+  - indicator: sideway_shrink
+    params:
+      amplitude: 3.0
+      days: 3
+      vol_ratio: 0.2
+  - indicator: kdj_j_oversold
+    params:
+      threshold: 30
+initial_capital: 100000
+k_type: daily
 max_positions: 3
+name: 横盘缩量突破
+position_pct: 0.3
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
 stop_loss_pct: 5.0
 take_profit_pct: 20.0
 trailing_stop_pct: 8.0

@@ -1,4 +1,4 @@
-# zzh1.0 — 基线
+_pool: 大蓝筹
 backtest_mode: signal
 buy_execution: next_day
 buy_price_type: open

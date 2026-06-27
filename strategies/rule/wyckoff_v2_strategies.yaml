@@ -1,375 +1,547 @@
-# 威科夫策略 v2 - 6版变体
-# 基于深度研读威科夫操盘术后的精细化策略
-
+_pool: 大蓝筹
 strategies:
-
-  # ========================================
-  # V1: 弹簧效应+SC确认（保守型，高胜率优先）
-  # 逻辑：先等SC恐慌抛售出现，再等Spring确认，双重验证
-  # Spring Type3: <1%破位+缩量，75-85%成功率
-  # ========================================
-  - name: "威科夫v1-SC+Spring保守"
-    config:
-      k_type: daily
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # SC抛售高潮 + Spring Type3(最安全)
-        - conditions:
-            - indicator: selling_climax
-              params: {vol_ratio: 2.0, min_drop: -4.0, wick_ratio: 0.3}
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: true, spring_type: 3}
-        # 二次测试确认底 + 弹簧
-        - conditions:
-            - indicator: secondary_test
-              params: {test_type: support, period: 20, vol_shrink: 0.5}
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: false}
-        # No Supply(无供应) + 低位
-        - conditions:
-            - indicator: no_supply
-              params: {vol_shrink: 0.4, max_drop: -0.5}
-            - indicator: low_position
-              params: {price_pct: 40, ma60_dist: 8}
-      add_groups:
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 20, vol_ratio: 1.5, min_pct: 2.0, wide_spread: true}
-        - conditions:
-            - indicator: last_point_support
-              params: {pullback_to: ma20, vol_shrink: 0.6, tolerance: 3, higher_low: true}
-      sell_groups:
-        - conditions:
-            - indicator: upthrust_distribution
-              params: {resist_period: 20, high_position: 70, vol_confirm: true}
-        - conditions:
-            - indicator: buying_climax
-              params: {vol_ratio: 2.0, min_rise: 5.0, wick_ratio: 0.4, high_position: 75}
-      reduce_groups:
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 20, vol_ratio: 1.3, min_drop: -2.0}
-        - conditions:
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 2.0}
-      reduce_pct: 0.5
-      stop_loss_pct: 5.0
-      take_profit_pct: 20.0
-      trailing_stop_pct: 8.0
-      max_hold_days: 30
-      stock_pool: []
-
-  # ========================================
-  # V2: 弹簧效应激进型（Spring Type1，大波动高回报）
-  # Terminal Shakeout: >3%破位+巨量，可产生15-40%涨幅
-  # 但风险最高，需严格止损
-  # ========================================
-  - name: "威科夫v2-弹簧激进"
-    config:
-      k_type: daily
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # Terminal Shakeout: >3%破位+巨量
-        - conditions:
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: true, spring_type: 1}
-            - indicator: low_position
-              params: {price_pct: 40, ma60_dist: 10}
-        # 停止成交量（下跌中被吸收）+ Spring
-        - conditions:
-            - indicator: stopping_volume
-              params: {vol_ratio: 1.5, max_spread: 2.0}
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: false}
-      add_groups:
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 20, vol_ratio: 1.5, min_pct: 3.0, wide_spread: true}
-      sell_groups:
-        - conditions:
-            - indicator: upthrust_distribution
-              params: {resist_period: 20, high_position: 65, vol_confirm: false}
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 20, vol_ratio: 1.5, min_drop: -3.0}
-      reduce_groups:
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bear_div, days: 6, vol_ratio: 1.3, vol_shrink: 0.7}
-        - conditions:
-            - indicator: buying_climax
-              params: {vol_ratio: 2.0, min_rise: 4.0, wick_ratio: 0.3, high_position: 70}
-      reduce_pct: 0.5
-      stop_loss_pct: 7.0
-      take_profit_pct: 30.0
-      trailing_stop_pct: 12.0
-      max_hold_days: 45
-      stock_pool: []
-
-  # ========================================
-  # V3: 量价法则三定律（努力vs结果为核心）
-  # 放量大跌+缩量企稳=卖盘衰竭 → 买入
-  # 放量大涨+缩量停滞=买盘衰竭 → 卖出
-  # ========================================
-  - name: "威科夫v3-量价法则"
-    config:
-      k_type: daily
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # 牛市背离: 放量大跌→缩量企稳 + 低位 + 非出货
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bull_div, days: 6, vol_ratio: 1.3, vol_shrink: 0.7}
-            - indicator: low_position
-              params: {price_pct: 45, ma60_dist: 8}
-            - indicator: not_distribution
-              params: {}
-        # Stopping Volume + No Supply 双确认
-        - conditions:
-            - indicator: stopping_volume
-              params: {vol_ratio: 1.5, max_spread: 2.5}
-            - indicator: no_supply
-              params: {vol_shrink: 0.5, max_drop: -0.5}
-        # 二次测试确认支撑 + No Supply
-        - conditions:
-            - indicator: secondary_test
-              params: {test_type: support, period: 20, vol_shrink: 0.5}
-            - indicator: no_supply
-              params: {vol_shrink: 0.4, max_drop: -0.3}
-      add_groups:
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 20, vol_ratio: 1.5, min_pct: 2.0}
-        - conditions:
-            - indicator: last_point_support
-              params: {pullback_to: ma20, vol_shrink: 0.6, tolerance: 3, higher_low: true}
-      sell_groups:
-        # 熊市背离: 放量大涨→缩量停滞
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bear_div, days: 6, vol_ratio: 1.3, vol_shrink: 0.7}
-            - indicator: buying_climax
-              params: {vol_ratio: 1.8, min_rise: 3.0, wick_ratio: 0.3, high_position: 65}
-        # No Demand + 高位
-        - conditions:
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 2.0}
-            - indicator: upthrust_distribution
-              params: {resist_period: 20, high_position: 60, vol_confirm: false}
-      reduce_groups:
-        - conditions:
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 1.5}
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 20, vol_ratio: 1.3, min_drop: -2.0}
-      reduce_pct: 0.5
-      stop_loss_pct: 6.0
-      take_profit_pct: 20.0
-      trailing_stop_pct: 8.0
-      max_hold_days: 25
-      stock_pool: []
-
-  # ========================================
-  # V4: 完整吸筹流程（SC→ST→Spring→SOS→LPS）
-  # 模拟威科夫吸筹阶段A→D的完整事件序列
-  # ========================================
-  - name: "威科夫v4-完整吸筹"
-    config:
-      k_type: daily
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # SC + Spring Type2(中等) 严格模式
-        - conditions:
-            - indicator: selling_climax
-              params: {vol_ratio: 2.5, min_drop: -5.0, wick_ratio: 0.35}
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: true, spring_type: 2}
-        # ST(二次测试) + 低位 + 供应枯竭
-        - conditions:
-            - indicator: secondary_test
-              params: {test_type: support, period: 20, vol_shrink: 0.5}
-            - indicator: no_supply
-              params: {vol_shrink: 0.4, max_drop: -0.3}
-            - indicator: low_position
-              params: {price_pct: 35, ma60_dist: 5}
-        # Spring + Stopping Volume
-        - conditions:
-            - indicator: stopping_volume
-              params: {vol_ratio: 1.5, max_spread: 2.0}
-            - indicator: spring_shakeout
-              params: {support_period: 20, support_type: low, vol_confirm: false, spring_type: 0}
-            - indicator: low_position
-              params: {price_pct: 40, ma60_dist: 8}
-      add_groups:
-        # SOS: 放量突破确认吸筹完成
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 20, vol_ratio: 1.5, min_pct: 2.0, wide_spread: true}
-        # LPS: 缩量回踩+更高低点
-        - conditions:
-            - indicator: last_point_support
-              params: {pullback_to: ma20, vol_shrink: 0.6, tolerance: 3, higher_low: true}
-      sell_groups:
-        - conditions:
-            - indicator: upthrust_distribution
-              params: {resist_period: 20, high_position: 70, vol_confirm: true}
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 20, vol_ratio: 1.5, min_drop: -3.0}
-      reduce_groups:
-        - conditions:
-            - indicator: buying_climax
-              params: {vol_ratio: 2.0, min_rise: 4.0, wick_ratio: 0.35, high_position: 70}
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bear_div, days: 6, vol_ratio: 1.3, vol_shrink: 0.7}
-      reduce_pct: 0.5
-      stop_loss_pct: 6.0
-      take_profit_pct: 25.0
-      trailing_stop_pct: 10.0
-      max_hold_days: 35
-      stock_pool: []
-
-  # ========================================
-  # V5: 派发识别+逃顶（BC→UTAD→SOW→LPSY）
-  # 专注顶部信号，配合做空/卖出策略
-  # ========================================
-  - name: "威科夫v5-派发逃顶"
-    config:
-      k_type: daily
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # 只在派发后的新吸筹才买入（极保守）
-        - conditions:
-            - indicator: selling_climax
-              params: {vol_ratio: 2.5, min_drop: -6.0, wick_ratio: 0.4}
-            - indicator: spring_shakeout
-              params: {support_period: 30, support_type: low, vol_confirm: true, spring_type: 3}
-        - conditions:
-            - indicator: stopping_volume
-              params: {vol_ratio: 1.5, max_spread: 2.0}
-            - indicator: no_supply
-              params: {vol_shrink: 0.4, max_drop: -0.5}
-            - indicator: low_position
-              params: {price_pct: 30, ma60_dist: 5}
-      add_groups:
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 20, vol_ratio: 1.5, min_pct: 2.0, wide_spread: true}
-        - conditions:
-            - indicator: last_point_support
-              params: {pullback_to: ma20, vol_shrink: 0.6, tolerance: 3, higher_low: true}
-      sell_groups:
-        # BC抢购高潮（最优先出场）
-        - conditions:
-            - indicator: buying_climax
-              params: {vol_ratio: 2.0, min_rise: 5.0, wick_ratio: 0.4, high_position: 75}
-        # UTAD上冲回落（假突破）
-        - conditions:
-            - indicator: upthrust_distribution
-              params: {resist_period: 20, high_position: 65, vol_confirm: true}
-        # 二次测试顶部+缩量（ST for BC）
-        - conditions:
-            - indicator: secondary_test
-              params: {test_type: resist, period: 20, vol_shrink: 0.6}
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 2.0}
-      reduce_groups:
-        # No Demand（上涨乏力）
-        - conditions:
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 1.5}
-        # SOW弱势信号
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 20, vol_ratio: 1.3, min_drop: -2.0}
-        # 熊市背离
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bear_div, days: 6, vol_ratio: 1.3, vol_shrink: 0.7}
-      reduce_pct: 0.5
-      stop_loss_pct: 5.0
-      take_profit_pct: 15.0
-      trailing_stop_pct: 6.0
-      max_hold_days: 20
-      stock_pool: []
-
-  # ========================================
-  # V6: 周线级威科夫（大级别趋势跟踪）
-  # 周K线上做威科夫分析，信号更可靠但频率低
-  # ========================================
-  - name: "威科夫v6-周线大级别"
-    config:
-      k_type: weekly
-      backtest_mode: signal
-      buy_price_type: open
-      sell_price_type: avg
-      buy_execution: next_day
-      sell_execution: next_day
-      buy_groups:
-        # 周线SC + Spring（放宽参数匹配周线波动）
-        - conditions:
-            - indicator: selling_climax
-              params: {vol_ratio: 1.8, min_drop: -3.0, wick_ratio: 0.3}
-            - indicator: spring_shakeout
-              params: {support_period: 15, support_type: low, vol_confirm: false, spring_type: 0}
-        # 周线量价背离 + 低位
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bull_div, days: 5, vol_ratio: 1.3, vol_shrink: 0.7}
-            - indicator: low_position
-              params: {price_pct: 40, ma60_dist: 8}
-        # No Supply（周线供应枯竭）
-        - conditions:
-            - indicator: no_supply
-              params: {vol_shrink: 0.5, max_drop: -1.0}
-            - indicator: price_above_ma
-              params: {period: 60}
-      add_groups:
-        - conditions:
-            - indicator: sign_of_strength
-              params: {breakout_period: 15, vol_ratio: 1.5, min_pct: 3.0}
-        - conditions:
-            - indicator: last_point_support
-              params: {pullback_to: ma20, vol_shrink: 0.6, tolerance: 4}
-      sell_groups:
-        - conditions:
-            - indicator: upthrust_distribution
-              params: {resist_period: 15, high_position: 65, vol_confirm: false}
-        - conditions:
-            - indicator: sign_of_weakness
-              params: {support_period: 15, vol_ratio: 1.3, min_drop: -2.0}
-      reduce_groups:
-        - conditions:
-            - indicator: effort_result_diverge
-              params: {type: bear_div, days: 5, vol_ratio: 1.3, vol_shrink: 0.7}
-        - conditions:
-            - indicator: no_demand
-              params: {vol_shrink: 0.5, min_rise: 0.0, max_rise: 2.0}
-      reduce_pct: 0.5
-      stop_loss_pct: 8.0
-      take_profit_pct: 30.0
-      trailing_stop_pct: 12.0
-      max_hold_days: 60
-      stock_pool: []
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 20
+          min_pct: 2.0
+          vol_ratio: 1.5
+          wide_spread: true
+    - conditions:
+      - indicator: last_point_support
+        params:
+          higher_low: true
+          pullback_to: ma20
+          tolerance: 3
+          vol_shrink: 0.6
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: selling_climax
+        params:
+          min_drop: -4.0
+          vol_ratio: 2.0
+          wick_ratio: 0.3
+      - indicator: spring_shakeout
+        params:
+          spring_type: 3
+          support_period: 20
+          support_type: low
+          vol_confirm: true
+    - conditions:
+      - indicator: secondary_test
+        params:
+          period: 20
+          test_type: support
+          vol_shrink: 0.5
+      - indicator: spring_shakeout
+        params:
+          support_period: 20
+          support_type: low
+          vol_confirm: false
+    - conditions:
+      - indicator: no_supply
+        params:
+          max_drop: -0.5
+          vol_shrink: 0.4
+      - indicator: low_position
+        params:
+          ma60_dist: 8
+          price_pct: 40
+    buy_price_type: open
+    k_type: daily
+    max_hold_days: 30
+    reduce_groups:
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -2.0
+          support_period: 20
+          vol_ratio: 1.3
+    - conditions:
+      - indicator: no_demand
+        params:
+          max_rise: 2.0
+          min_rise: 0.0
+          vol_shrink: 0.5
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: upthrust_distribution
+        params:
+          high_position: 70
+          resist_period: 20
+          vol_confirm: true
+    - conditions:
+      - indicator: buying_climax
+        params:
+          high_position: 75
+          min_rise: 5.0
+          vol_ratio: 2.0
+          wick_ratio: 0.4
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 5.0
+    take_profit_pct: 20.0
+    trailing_stop_pct: 8.0
+  name: 威科夫v1-SC+Spring保守
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 20
+          min_pct: 3.0
+          vol_ratio: 1.5
+          wide_spread: true
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: spring_shakeout
+        params:
+          spring_type: 1
+          support_period: 20
+          support_type: low
+          vol_confirm: true
+      - indicator: low_position
+        params:
+          ma60_dist: 10
+          price_pct: 40
+    - conditions:
+      - indicator: stopping_volume
+        params:
+          max_spread: 2.0
+          vol_ratio: 1.5
+      - indicator: spring_shakeout
+        params:
+          support_period: 20
+          support_type: low
+          vol_confirm: false
+    buy_price_type: open
+    k_type: daily
+    max_hold_days: 45
+    reduce_groups:
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 6
+          type: bear_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+    - conditions:
+      - indicator: buying_climax
+        params:
+          high_position: 70
+          min_rise: 4.0
+          vol_ratio: 2.0
+          wick_ratio: 0.3
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: upthrust_distribution
+        params:
+          high_position: 65
+          resist_period: 20
+          vol_confirm: false
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -3.0
+          support_period: 20
+          vol_ratio: 1.5
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 7.0
+    take_profit_pct: 30.0
+    trailing_stop_pct: 12.0
+  name: 威科夫v2-弹簧激进
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 20
+          min_pct: 2.0
+          vol_ratio: 1.5
+    - conditions:
+      - indicator: last_point_support
+        params:
+          higher_low: true
+          pullback_to: ma20
+          tolerance: 3
+          vol_shrink: 0.6
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 6
+          type: bull_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+      - indicator: low_position
+        params:
+          ma60_dist: 8
+          price_pct: 45
+      - indicator: not_distribution
+        params: {}
+    - conditions:
+      - indicator: stopping_volume
+        params:
+          max_spread: 2.5
+          vol_ratio: 1.5
+      - indicator: no_supply
+        params:
+          max_drop: -0.5
+          vol_shrink: 0.5
+    - conditions:
+      - indicator: secondary_test
+        params:
+          period: 20
+          test_type: support
+          vol_shrink: 0.5
+      - indicator: no_supply
+        params:
+          max_drop: -0.3
+          vol_shrink: 0.4
+    buy_price_type: open
+    k_type: daily
+    max_hold_days: 25
+    reduce_groups:
+    - conditions:
+      - indicator: no_demand
+        params:
+          max_rise: 1.5
+          min_rise: 0.0
+          vol_shrink: 0.5
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -2.0
+          support_period: 20
+          vol_ratio: 1.3
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 6
+          type: bear_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+      - indicator: buying_climax
+        params:
+          high_position: 65
+          min_rise: 3.0
+          vol_ratio: 1.8
+          wick_ratio: 0.3
+    - conditions:
+      - indicator: no_demand
+        params:
+          max_rise: 2.0
+          min_rise: 0.0
+          vol_shrink: 0.5
+      - indicator: upthrust_distribution
+        params:
+          high_position: 60
+          resist_period: 20
+          vol_confirm: false
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 6.0
+    take_profit_pct: 20.0
+    trailing_stop_pct: 8.0
+  name: 威科夫v3-量价法则
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 20
+          min_pct: 2.0
+          vol_ratio: 1.5
+          wide_spread: true
+    - conditions:
+      - indicator: last_point_support
+        params:
+          higher_low: true
+          pullback_to: ma20
+          tolerance: 3
+          vol_shrink: 0.6
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: selling_climax
+        params:
+          min_drop: -5.0
+          vol_ratio: 2.5
+          wick_ratio: 0.35
+      - indicator: spring_shakeout
+        params:
+          spring_type: 2
+          support_period: 20
+          support_type: low
+          vol_confirm: true
+    - conditions:
+      - indicator: secondary_test
+        params:
+          period: 20
+          test_type: support
+          vol_shrink: 0.5
+      - indicator: no_supply
+        params:
+          max_drop: -0.3
+          vol_shrink: 0.4
+      - indicator: low_position
+        params:
+          ma60_dist: 5
+          price_pct: 35
+    - conditions:
+      - indicator: stopping_volume
+        params:
+          max_spread: 2.0
+          vol_ratio: 1.5
+      - indicator: spring_shakeout
+        params:
+          spring_type: 0
+          support_period: 20
+          support_type: low
+          vol_confirm: false
+      - indicator: low_position
+        params:
+          ma60_dist: 8
+          price_pct: 40
+    buy_price_type: open
+    k_type: daily
+    max_hold_days: 35
+    reduce_groups:
+    - conditions:
+      - indicator: buying_climax
+        params:
+          high_position: 70
+          min_rise: 4.0
+          vol_ratio: 2.0
+          wick_ratio: 0.35
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 6
+          type: bear_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: upthrust_distribution
+        params:
+          high_position: 70
+          resist_period: 20
+          vol_confirm: true
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -3.0
+          support_period: 20
+          vol_ratio: 1.5
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 6.0
+    take_profit_pct: 25.0
+    trailing_stop_pct: 10.0
+  name: 威科夫v4-完整吸筹
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 20
+          min_pct: 2.0
+          vol_ratio: 1.5
+          wide_spread: true
+    - conditions:
+      - indicator: last_point_support
+        params:
+          higher_low: true
+          pullback_to: ma20
+          tolerance: 3
+          vol_shrink: 0.6
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: selling_climax
+        params:
+          min_drop: -6.0
+          vol_ratio: 2.5
+          wick_ratio: 0.4
+      - indicator: spring_shakeout
+        params:
+          spring_type: 3
+          support_period: 30
+          support_type: low
+          vol_confirm: true
+    - conditions:
+      - indicator: stopping_volume
+        params:
+          max_spread: 2.0
+          vol_ratio: 1.5
+      - indicator: no_supply
+        params:
+          max_drop: -0.5
+          vol_shrink: 0.4
+      - indicator: low_position
+        params:
+          ma60_dist: 5
+          price_pct: 30
+    buy_price_type: open
+    k_type: daily
+    max_hold_days: 20
+    reduce_groups:
+    - conditions:
+      - indicator: no_demand
+        params:
+          max_rise: 1.5
+          min_rise: 0.0
+          vol_shrink: 0.5
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -2.0
+          support_period: 20
+          vol_ratio: 1.3
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 6
+          type: bear_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: buying_climax
+        params:
+          high_position: 75
+          min_rise: 5.0
+          vol_ratio: 2.0
+          wick_ratio: 0.4
+    - conditions:
+      - indicator: upthrust_distribution
+        params:
+          high_position: 65
+          resist_period: 20
+          vol_confirm: true
+    - conditions:
+      - indicator: secondary_test
+        params:
+          period: 20
+          test_type: resist
+          vol_shrink: 0.6
+      - indicator: no_demand
+        params:
+          max_rise: 2.0
+          min_rise: 0.0
+          vol_shrink: 0.5
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 5.0
+    take_profit_pct: 15.0
+    trailing_stop_pct: 6.0
+  name: 威科夫v5-派发逃顶
+- config:
+    add_groups:
+    - conditions:
+      - indicator: sign_of_strength
+        params:
+          breakout_period: 15
+          min_pct: 3.0
+          vol_ratio: 1.5
+    - conditions:
+      - indicator: last_point_support
+        params:
+          pullback_to: ma20
+          tolerance: 4
+          vol_shrink: 0.6
+    backtest_mode: signal
+    buy_execution: next_day
+    buy_groups:
+    - conditions:
+      - indicator: selling_climax
+        params:
+          min_drop: -3.0
+          vol_ratio: 1.8
+          wick_ratio: 0.3
+      - indicator: spring_shakeout
+        params:
+          spring_type: 0
+          support_period: 15
+          support_type: low
+          vol_confirm: false
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 5
+          type: bull_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+      - indicator: low_position
+        params:
+          ma60_dist: 8
+          price_pct: 40
+    - conditions:
+      - indicator: no_supply
+        params:
+          max_drop: -1.0
+          vol_shrink: 0.5
+      - indicator: price_above_ma
+        params:
+          period: 60
+    buy_price_type: open
+    k_type: weekly
+    max_hold_days: 60
+    reduce_groups:
+    - conditions:
+      - indicator: effort_result_diverge
+        params:
+          days: 5
+          type: bear_div
+          vol_ratio: 1.3
+          vol_shrink: 0.7
+    - conditions:
+      - indicator: no_demand
+        params:
+          max_rise: 2.0
+          min_rise: 0.0
+          vol_shrink: 0.5
+    reduce_pct: 0.5
+    sell_execution: next_day
+    sell_groups:
+    - conditions:
+      - indicator: upthrust_distribution
+        params:
+          high_position: 65
+          resist_period: 15
+          vol_confirm: false
+    - conditions:
+      - indicator: sign_of_weakness
+        params:
+          min_drop: -2.0
+          support_period: 15
+          vol_ratio: 1.3
+    sell_price_type: avg
+    stock_pool: []
+    stop_loss_pct: 8.0
+    take_profit_pct: 30.0
+    trailing_stop_pct: 12.0
+  name: 威科夫v6-周线大级别
