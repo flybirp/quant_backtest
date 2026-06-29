@@ -476,10 +476,32 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                 to_close_partial = []
                 for lot in open_lots:
                     lot_profit = (close_price - lot["buy_price"]) / lot["buy_price"] * 100
+                    # 计算相对最高价的盈利（用于 from_highest 模式）
+                    highest_profit = (lot["highest"] - lot["buy_price"]) / lot["buy_price"] * 100 if lot["highest"] > lot["buy_price"] else 0
+                    # 计算当前价格相对最高价的位置
+                    from_highest_pct = (close_price - lot["highest"]) / lot["highest"] * 100 if lot["highest"] > 0 else 0
+
                     for level_idx, level in enumerate(config.exit_ladder):
                         if level_idx in lot["exit_triggered"]:
                             continue
-                        if lot_profit >= level["profit_pct"]:
+
+                        # 判断是否触发止盈
+                        should_trigger = False
+                        trigger_reason = ""
+
+                        if level.get("use_highest", False):
+                            # 模式1：基于持仓最高价
+                            # 当价格回到最高价时触发（from_highest_pct >= 0）
+                            if from_highest_pct >= 0 and highest_profit > 0:
+                                should_trigger = True
+                                trigger_reason = f"回到前高+{highest_profit:.1f}%"
+                        else:
+                            # 模式2：基于买入价（传统模式）
+                            if lot_profit >= level["profit_pct"]:
+                                should_trigger = True
+                                trigger_reason = f"分批止盈+{level['profit_pct']}%"
+
+                        if should_trigger:
                             # 触发该层止盈，向下取整到最小交易单位
                             raw_close = int(lot["shares"] * level["close_pct"] / 100)
                             close_shares = (raw_close // min_unit) * min_unit
@@ -491,7 +513,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                             if actual_close > 0:
                                 is_clear = (actual_close == lot["shares"])
                                 action = "clear" if is_clear else "reduce"
-                                reason = f"分批止盈+{level['profit_pct']}%" if not is_clear else f"分批止盈清仓+{level['profit_pct']}%"
+                                reason = trigger_reason if not is_clear else f"{trigger_reason}清仓"
                                 to_close_partial.append((lot, level_idx, actual_close, reason, action))
 
                 # 直接使用 lot 对象引用，避免索引错位

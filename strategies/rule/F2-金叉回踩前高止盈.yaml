@@ -1,0 +1,72 @@
+# 策略：金叉回踩前高止盈
+# 基于经典买点案例的完整画像（动态止盈版）
+#
+# 买点逻辑：
+# 1. zhixing_fast 金叉 zhixing_slow（趋势确认）
+# 2. 回踩到 zhixing_slow 附近（支撑位）
+# 3. 缩量回踩（量比<0.8）- 卖压衰竭
+# 4. 非派发阶段
+# 5. 相对强度为正
+#
+# 卖点逻辑（动态分批止盈）：
+# 1. 第一卖点：价格回到持仓期间最高价（前高点）→ 卖50%
+# 2. 第二卖点：从第一卖点再涨20% → 卖剩余50%
+# 3. 止损：价格跌破买点5% → 清仓
+#
+# 与F1的区别：
+# - F1用固定+15%作为"前高点"（不准确）
+# - F2用动态的持仓最高价作为"前高点"（精确）
+#
+# 统计依据：
+# - 金叉后回踩zhixing_slow回升率93.7%
+# - 跌破zs不超过5%创新高率99.3%
+# - 回踩缩量（量比<0.8）是卖压衰竭信号
+
+name: F2-金叉回踩前高止盈
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：金叉后回踩zhixing_slow
+buy_groups:
+  - name: 金叉回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 缩量回踩（卖压衰竭）
+      - indicator: volume_shrink
+        params: {ratio: 0.8}
+      # 非派发阶段
+      - indicator: not_distribution
+      # 相对强度（避免弱势股）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件：分批止盈
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场（趋势破坏）
+      - indicator: zhixing_dead_cross
+
+# 分批止盈（Exit Ladder）- 动态前高版
+# 第一卖点：价格回到持仓最高价（前高点）→ 卖50%
+# 第二卖点：从最高价再涨20% → 卖剩余50%
+exit_ladder:
+  - use_highest: true    # 使用持仓最高价作为触发点
+    close_pct: 50        # 卖出50%
+  - profit_pct: 20       # 从买入价盈利20%（约等于从最高价再涨20%）
+    close_pct: 100       # 卖出剩余全部
+
+# 风控参数
+stop_loss_pct: 5         # 止损5%（跌破买点清仓）
+take_profit_pct: 0       # 不使用固定止盈（用分批止盈）
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天
