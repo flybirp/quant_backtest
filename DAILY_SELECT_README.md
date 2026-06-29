@@ -38,23 +38,57 @@ python3 daily_select_pipeline.py scan --strategy RS10_A1 --pool 大蓝筹
 
 ## 持仓文件格式
 
-`portfolio.json` 文件格式：
+`portfolio.json` 文件格式（按交易记录）：
 
 ```json
 {
-  "holdings": [
+  "trades": [
     {
+      "trade_id": "T001",
       "code": "000001",
       "name": "平安银行",
       "buy_date": "2024-01-15",
       "buy_price": 10.50,
       "shares": 1000,
-      "strategy": "RS10_A1"
+      "strategy": "RS10_A1",
+      "status": "holding",
+      "sell_date": null,
+      "sell_price": null,
+      "sell_reason": null,
+      "profit_pct": null,
+      "notes": "首笔买入"
+    },
+    {
+      "trade_id": "T002",
+      "code": "000001",
+      "name": "平安银行",
+      "buy_date": "2024-02-20",
+      "buy_price": 10.20,
+      "shares": 500,
+      "strategy": "RS10_A1",
+      "status": "holding",
+      "sell_date": null,
+      "sell_price": null,
+      "sell_reason": null,
+      "profit_pct": null,
+      "notes": "加仓"
     }
-  ],
-  "updated_at": "2024-03-01 10:00:00"
+  ]
 }
 ```
+
+**字段说明：**
+- `trade_id`: 必填，唯一交易ID
+- `code`: 必填，股票代码
+- `buy_price`: 必填，买入价格
+- `shares`: 必填，持仓数量
+- `strategy`: 必填，买入策略（卖点扫描时必须匹配）
+- `status`: 必填，holding=持仓中，sold=已卖出
+
+**支持分批加仓/减仓：**
+- 同一股票可以有多笔交易记录
+- 每笔交易独立计算止损/止盈
+- 每笔交易有不同的成本价
 
 ## 卖点检测逻辑
 

@@ -1,28 +1,64 @@
 {
-  "holdings": [
+  "trades": [
     {
+      "trade_id": "T001",
       "code": "000001",
       "name": "平安银行",
       "buy_date": "2024-01-15",
       "buy_price": 10.50,
       "shares": 1000,
-      "strategy": "RS10_A1"
+      "strategy": "RS10_A1",
+      "status": "holding",
+      "sell_date": null,
+      "sell_price": null,
+      "sell_reason": null,
+      "profit_pct": null,
+      "notes": "首笔买入"
     },
     {
+      "trade_id": "T002",
+      "code": "000001",
+      "name": "平安银行",
+      "buy_date": "2024-02-20",
+      "buy_price": 10.20,
+      "shares": 500,
+      "strategy": "RS10_A1",
+      "status": "holding",
+      "sell_date": null,
+      "sell_price": null,
+      "sell_reason": null,
+      "profit_pct": null,
+      "notes": "加仓"
+    },
+    {
+      "trade_id": "T003",
       "code": "600036",
       "name": "招商银行",
-      "buy_date": "2024-02-20",
+      "buy_date": "2024-03-10",
       "buy_price": 35.20,
       "shares": 500,
-      "strategy": "RS10_A1"
+      "strategy": "RS10_A1",
+      "status": "sold",
+      "sell_date": "2024-04-15",
+      "sell_price": 38.50,
+      "sell_reason": "止盈+80%",
+      "profit_pct": 9.38,
+      "notes": ""
     }
   ],
   "_说明": {
+    "trade_id": "必填，唯一交易ID",
     "code": "必填，股票代码",
-    "name": "可选，股票名称（方便阅读）",
-    "buy_date": "可选，买入日期（用于计算持仓天数）",
-    "buy_price": "必填，买入价格（用于计算盈亏和止损/止盈）",
-    "shares": "可选，持仓数量（用于计算市值）",
-    "strategy": "必填，买入时使用的策略（用于卖点扫描时校验策略一致性）"
+    "name": "可选，股票名称",
+    "buy_date": "必填，买入日期",
+    "buy_price": "必填，买入价格",
+    "shares": "必填，持仓数量",
+    "strategy": "必填，买入策略（卖点扫描时必须匹配）",
+    "status": "必填，holding=持仓中，sold=已卖出",
+    "sell_date": "卖出后填写",
+    "sell_price": "卖出后填写",
+    "sell_reason": "卖出后填写",
+    "profit_pct": "卖出后填写，盈亏百分比",
+    "notes": "可选，备注"
   }
 }

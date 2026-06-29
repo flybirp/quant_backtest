@@ -105,8 +105,13 @@ def load_strategy(strategy_name: str) -> dict:
     return cfg
 
 
-def load_portfolio(portfolio_file: str = None) -> list:
-    """加载持仓信息"""
+def load_portfolio(portfolio_file: str = None, status: str = "holding") -> list:
+    """加载持仓信息（按交易记录）
+
+    Args:
+        portfolio_file: 持仓文件路径
+        status: 筛选状态，holding=持仓中，sold=已卖出，all=全部
+    """
     if portfolio_file:
         pfile = Path(portfolio_file)
     else:
@@ -123,42 +128,59 @@ def load_portfolio(portfolio_file: str = None) -> list:
         print(f"  ❌ 持仓文件格式错误: {e}")
         return []
 
-    # 兼容两种格式：直接列表 或 {holdings: [...]}
+    # 兼容多种格式
     if isinstance(data, list):
-        portfolio = data
+        trades = data
     elif isinstance(data, dict):
-        portfolio = data.get('holdings', [])
+        # 优先使用 trades，兼容 holdings
+        trades = data.get('trades', data.get('holdings', []))
     else:
         print(f"  ❌ 持仓文件格式不正确")
         return []
 
     # 校验和清理每条记录
-    valid_portfolio = []
-    for i, holding in enumerate(portfolio):
+    valid_trades = []
+    for i, trade in enumerate(trades):
         # 必须有股票代码
-        code = holding.get('code', '').strip()
+        code = trade.get('code', '').strip()
         if not code:
             print(f"  ⚠️ 第{i+1}条记录缺少 'code' 字段，跳过")
             continue
 
-        # 默认值处理
-        valid_holding = {
-            'code': code,
-            'name': holding.get('name', ''),
-            'buy_date': holding.get('buy_date', ''),
-            'buy_price': _safe_float(holding.get('buy_price', 0)),
-            'shares': _safe_int(holding.get('shares', 0)),
-            'strategy': holding.get('strategy', ''),
-        }
-
-        # 校验买入价格
-        if valid_holding['buy_price'] <= 0:
-            print(f"  ⚠️ {code} 的 'buy_price' 无效 ({holding.get('buy_price')})，跳过")
+        # 状态筛选
+        trade_status = trade.get('status', 'holding')
+        if status != "all" and trade_status != status:
             continue
 
-        valid_portfolio.append(valid_holding)
+        # 默认值处理
+        valid_trade = {
+            'trade_id': trade.get('trade_id', f'T{i+1:03d}'),
+            'code': code,
+            'name': trade.get('name', ''),
+            'buy_date': trade.get('buy_date', ''),
+            'buy_price': _safe_float(trade.get('buy_price', 0)),
+            'shares': _safe_int(trade.get('shares', 0)),
+            'strategy': trade.get('strategy', ''),
+            'status': trade_status,
+            'sell_date': trade.get('sell_date'),
+            'sell_price': _safe_float(trade.get('sell_price', 0)) or None,
+            'sell_reason': trade.get('sell_reason'),
+            'profit_pct': _safe_float(trade.get('profit_pct', 0)) or None,
+            'notes': trade.get('notes', ''),
+        }
 
-    return valid_portfolio
+        # 校验必填字段
+        if valid_trade['buy_price'] <= 0:
+            print(f"  ⚠️ {code} ({valid_trade['trade_id']}) 的 'buy_price' 无效，跳过")
+            continue
+
+        if not valid_trade['strategy']:
+            print(f"  ⚠️ {code} ({valid_trade['trade_id']}) 缺少 'strategy' 字段，跳过")
+            continue
+
+        valid_trades.append(valid_trade)
+
+    return valid_trades
 
 
 def _safe_float(value, default: float = 0.0) -> float:
@@ -211,18 +233,22 @@ def scan_buy_signals(strategy_name: str, pool_name: str = "大蓝筹") -> list:
     return buy_signals
 
 
-def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
+def scan_sell_signals(strategy_name: str, trades: list) -> list:
     """扫描卖点信号
 
     ⚠️ 重要原则：买点和卖点必须使用同一个策略！
     不能用A策略买入，用B策略卖出。
+
+    Args:
+        strategy_name: 策略名称
+        trades: 持仓交易列表（从 load_portfolio 获取）
     """
     from backend.main import _config_from_dict
     from backend.backtest_engine import run_backtest
 
     print(f"\n🔍 扫描卖点信号: {strategy_name}")
 
-    if not portfolio:
+    if not trades:
         print("  ⚠️ 无持仓信息，跳过卖点扫描")
         return []
 
@@ -233,18 +259,19 @@ def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
     today = datetime.now().strftime("%Y-%m-%d")
     skipped_count = 0
 
-    for holding in portfolio:
-        code = holding.get('code')
-        buy_price = holding.get('buy_price', 0)
-        buy_date = holding.get('buy_date', '')
-        holding_strategy = holding.get('strategy', '')
+    for trade in trades:
+        trade_id = trade.get('trade_id', '')
+        code = trade.get('code', '')
+        buy_price = trade.get('buy_price', 0)
+        buy_date = trade.get('buy_date', '')
+        holding_strategy = trade.get('strategy', '')
 
         if not code or not buy_price:
             continue
 
         # ⚠️ 强制限制：买点和卖点必须使用同一个策略
         if holding_strategy and holding_strategy != strategy_name:
-            print(f"  ⚠️ 跳过 {code}: 买入策略={holding_strategy} ≠ 当前策略={strategy_name}")
+            print(f"  ⚠️ 跳过 {code} ({trade_id}): 买入策略={holding_strategy} ≠ 当前策略={strategy_name}")
             skipped_count += 1
             continue
 
@@ -253,33 +280,36 @@ def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
         r = run_backtest(_config_from_dict(cfg))
 
         # 检查是否有卖出信号
-        for trade in r.trades:
-            if trade.get('sell_date') == today:
+        for backtest_trade in r.trades:
+            if backtest_trade.get('sell_date') == today:
                 # 计算盈亏
-                profit_pct = (trade['sell_price'] - buy_price) / buy_price * 100
+                profit_pct = (backtest_trade['sell_price'] - buy_price) / buy_price * 100
 
                 # 判断卖出原因
-                sell_reason = trade.get('sell_reason', '')
+                sell_reason = backtest_trade.get('sell_reason', '')
                 is_stop_loss = profit_pct <= -cfg.get('stop_loss_pct', 25)
                 is_take_profit = profit_pct >= cfg.get('take_profit_pct', 80)
 
                 sell_signals.append({
+                    'trade_id': trade_id,
                     'code': code,
+                    'name': trade.get('name', ''),
                     'buy_date': buy_date,
                     'buy_price': buy_price,
-                    'sell_date': trade['sell_date'],
-                    'sell_price': trade['sell_price'],
+                    'shares': trade.get('shares', 0),
+                    'sell_date': backtest_trade['sell_date'],
+                    'sell_price': backtest_trade['sell_price'],
                     'profit_pct': round(profit_pct, 2),
                     'sell_reason': sell_reason,
                     'is_stop_loss': is_stop_loss,
                     'is_take_profit': is_take_profit,
-                    'hold_days': (datetime.strptime(trade['sell_date'], '%Y-%m-%d') -
-                                  datetime.strptime(buy_date, '%Y-%m-%d')).days,
+                    'hold_days': (datetime.strptime(backtest_trade['sell_date'], '%Y-%m-%d') -
+                                  datetime.strptime(buy_date, '%Y-%m-%d')).days if buy_date else 0,
                     'strategy': strategy_name,
                 })
 
     if skipped_count > 0:
-        print(f"  ⚠️ 跳过 {skipped_count} 只股票（策略不匹配）")
+        print(f"  ⚠️ 跳过 {skipped_count} 笔交易（策略不匹配）")
 
     print(f"  ✅ 发现 {len(sell_signals)} 个卖点信号")
     return sell_signals
@@ -307,9 +337,9 @@ def print_sell_signals(signals: list):
         return
 
     print(f"\n📊 卖点信号: {len(signals)} 个")
-    print("=" * 80)
-    print(f"{'股票代码':<10} {'买入日期':<12} {'买入价':>10} {'卖出价':>10} {'盈亏%':>8} {'持仓天':>6} {'原因'}")
-    print("-" * 80)
+    print("=" * 90)
+    print(f"{'交易ID':<8} {'股票代码':<10} {'买入日期':<12} {'买入价':>10} {'卖出价':>10} {'盈亏%':>8} {'持仓天':>6} {'原因'}")
+    print("-" * 90)
 
     for s in signals:
         profit_str = f"{s['profit_pct']:+.2f}%"
@@ -318,8 +348,9 @@ def print_sell_signals(signals: list):
         elif s['is_take_profit']:
             profit_str = f"🟢{profit_str}"
 
-        print(f"{s['code']:<10} {s['buy_date']:<12} {s['buy_price']:>10.2f} "
-              f"{s['sell_price']:>10.2f} {profit_str:>8} {s['hold_days']:>6} {s['sell_reason']}")
+        print(f"{s.get('trade_id', ''):<8} {s['code']:<10} {s['buy_date']:<12} "
+              f"{s['buy_price']:>10.2f} {s['sell_price']:>10.2f} {profit_str:>8} "
+              f"{s['hold_days']:>6} {s['sell_reason']}")
 
 
 def save_signals(buy_signals: list, sell_signals: list, strategy_name: str):
@@ -385,8 +416,8 @@ def main():
         save_signals(buy_signals, [], args.strategy)
 
     elif args.command == 'sell':
-        portfolio = load_portfolio(args.portfolio)
-        sell_signals = scan_sell_signals(args.strategy, portfolio)
+        trades = load_portfolio(args.portfolio, status="holding")
+        sell_signals = scan_sell_signals(args.strategy, trades)
         print_sell_signals(sell_signals)
         save_signals([], sell_signals, args.strategy)
 
@@ -398,9 +429,9 @@ def main():
         buy_signals = scan_buy_signals(args.strategy, args.pool)
         print_buy_signals(buy_signals)
 
-        # 扫描卖点
-        portfolio = load_portfolio(args.portfolio)
-        sell_signals = scan_sell_signals(args.strategy, portfolio)
+        # 扫描卖点（只扫描持仓中的交易）
+        trades = load_portfolio(args.portfolio, status="holding")
+        sell_signals = scan_sell_signals(args.strategy, trades)
         print_sell_signals(sell_signals)
 
         # 保存信号
