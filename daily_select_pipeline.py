@@ -113,12 +113,68 @@ def load_portfolio(portfolio_file: str = None) -> list:
         pfile = PORTFOLIO_FILE
 
     if not pfile.exists():
+        print(f"  ⚠️ 持仓文件不存在: {pfile}")
         return []
 
-    with open(pfile) as f:
-        portfolio = json.load(f)
+    try:
+        with open(pfile) as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"  ❌ 持仓文件格式错误: {e}")
+        return []
 
-    return portfolio
+    # 兼容两种格式：直接列表 或 {holdings: [...]}
+    if isinstance(data, list):
+        portfolio = data
+    elif isinstance(data, dict):
+        portfolio = data.get('holdings', [])
+    else:
+        print(f"  ❌ 持仓文件格式不正确")
+        return []
+
+    # 校验和清理每条记录
+    valid_portfolio = []
+    for i, holding in enumerate(portfolio):
+        # 必须有股票代码
+        code = holding.get('code', '').strip()
+        if not code:
+            print(f"  ⚠️ 第{i+1}条记录缺少 'code' 字段，跳过")
+            continue
+
+        # 默认值处理
+        valid_holding = {
+            'code': code,
+            'name': holding.get('name', ''),
+            'buy_date': holding.get('buy_date', ''),
+            'buy_price': _safe_float(holding.get('buy_price', 0)),
+            'shares': _safe_int(holding.get('shares', 0)),
+            'strategy': holding.get('strategy', ''),
+        }
+
+        # 校验买入价格
+        if valid_holding['buy_price'] <= 0:
+            print(f"  ⚠️ {code} 的 'buy_price' 无效 ({holding.get('buy_price')})，跳过")
+            continue
+
+        valid_portfolio.append(valid_holding)
+
+    return valid_portfolio
+
+
+def _safe_float(value, default: float = 0.0) -> float:
+    """安全转换为float"""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _safe_int(value, default: int = 0) -> int:
+    """安全转换为int"""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def scan_buy_signals(strategy_name: str, pool_name: str = "大蓝筹") -> list:
