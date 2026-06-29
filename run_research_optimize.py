@@ -137,6 +137,18 @@ OPTIMIZATION_CONFIG = {
             "止损12%是最佳平衡点",
         ],
     },
+    "F3-确定性回踩": {
+        "base_strategy": "F3-确定性回踩",
+        "focus": "确定性回踩 - 波段回撤<5% + RSI>50 + KDJ金叉",
+        "key_params": ["stop_loss_pct", "trailing_stop_pct", "max_hold_days"],
+        "insights": [
+            "波段回撤<5% + RSI>50：91.2%涨幅>5%，收益+4.0%",
+            "RSI>50 + 振幅<3% + 量比>0.8：99.3%创新高率",
+            "KDJ金叉：短期动能确认",
+            "距zs>0%：创新高率89.1%",
+            "止损5%是最佳平衡点",
+        ],
+    },
 }
 
 

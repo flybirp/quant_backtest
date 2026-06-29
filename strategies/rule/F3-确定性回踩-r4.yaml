@@ -1,0 +1,41 @@
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: zhixing_fast_above_slow
+  - indicator: price_near_zhixing
+    params:
+      threshold: 5
+  - indicator: rsi_overbought
+    params:
+      period: 14
+      threshold: 50
+  - indicator: kdj_golden_cross
+  - indicator: volume_shrink
+    params:
+      ratio: 1.5
+  - indicator: not_distribution
+  - indicator: relative_strength
+    params:
+      lookback: 20
+      threshold: 0
+  name: 确定性回踩
+buy_price_type: open
+exit_ladder:
+- close_pct: 50
+  use_highest: true
+- close_pct: 100
+  from_highest_pct: 20
+k_type: daily
+max_hold_days: 180
+name: F3-确定性回踩-r4
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+  name: 趋势反转
+sell_price_type: avg
+stop_loss_pct: 5
+take_profit_pct: 15
+trailing_stop_pct: 0
