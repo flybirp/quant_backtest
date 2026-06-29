@@ -1,0 +1,21 @@
+{
+  "holdings": [
+    {
+      "code": "000001",
+      "name": "平安银行",
+      "buy_date": "2024-01-15",
+      "buy_price": 10.50,
+      "shares": 1000,
+      "strategy": "RS10_A1"
+    },
+    {
+      "code": "600036",
+      "name": "招商银行",
+      "buy_date": "2024-02-20",
+      "buy_price": 35.20,
+      "shares": 500,
+      "strategy": "RS10_A1"
+    }
+  ],
+  "updated_at": "2024-03-01 10:00:00"
+}
