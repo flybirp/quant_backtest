@@ -1,0 +1,44 @@
+# 策略：安静上涨
+# 来源：quant_discover 发现一 - 主升浪波段的回撤-涨幅反向关系
+# 统计依据：回撤0%-5%的波段涨幅中位378%，96.9%涨幅超100%
+# 核心逻辑："安静的上涨"优于"刺激的上涨"，沿均线平稳上行的个股潜力最大
+
+name: D3-安静上涨
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：沿知行线平稳上行，波动率低
+buy_groups:
+  - name: 安静上涨
+    conditions:
+      # 知行多头排列
+      - indicator: zhixing_fast_above_slow
+      # 价格在知行线附近（不远离，说明平稳）
+      - indicator: price_near_zhixing
+        params: {threshold: 10}
+      # 连续上涨（趋势确认）
+      - indicator: consecutive_up
+        params: {days: 3}
+      # 非派发阶段
+      - indicator: not_distribution
+      # 市值>200亿（大蓝筹更稳定）
+      - indicator: total_mv_above
+        params: {threshold: 200}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数
+stop_loss_pct: 8
+take_profit_pct: 80
+trailing_stop_pct: 15
+max_hold_days: 250

@@ -1,0 +1,42 @@
+# 策略：知行金叉回踩（优化版）
+# 优化点：
+# 1. 放宽止损：8% → 15%
+# 2. 延长持仓：120天 → 250天
+# 3. 降低止盈：50% → 30%（更快锁定利润）
+# 4. 增加移动止损幅度：15% → 25%
+
+name: D1-知行金叉回踩-优化
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：知行金叉后回踩zhixing_slow附近
+buy_groups:
+  - name: 知行金叉回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 非高位派发
+      - indicator: not_distribution
+      # 相对强度（避免弱势股）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件：知行死叉或趋势破坏
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      - indicator: zhixing_dead_cross
+
+# 风控参数（优化后）
+stop_loss_pct: 15        # 放宽止损：8% → 15%
+take_profit_pct: 30      # 降低止盈：50% → 30%
+trailing_stop_pct: 25    # 增加移动止损：15% → 25%
+max_hold_days: 250       # 延长持仓：120天 → 250天

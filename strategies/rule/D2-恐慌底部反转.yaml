@@ -1,0 +1,46 @@
+# 策略：恐慌底部反转
+# 来源：quant_discover 发现三+五
+# - 中证1000恐慌性下跌时是超大波段批量出现的环境
+# - 看涨击败（大跌+缩量）5天上涨率79.9%，20天收益中位+12.2%
+# 组合逻辑：在市场恐慌时，寻找底部缩量企稳的个股
+
+name: D2-恐慌底部反转
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：市场恐慌 + 个股低位缩量企稳
+buy_groups:
+  - name: 恐慌底部反转
+    conditions:
+      # 中证1000近期暴跌（20天跌>10%）
+      - indicator: zz1000_crash
+        params: {lookback: 20, threshold: -10}
+      # 个股处于低位
+      - indicator: low_position
+        params: {ma60_dist: 20, price_pct: 30}
+      # 缩量（量比<0.7，表示卖压衰竭）
+      - indicator: volume_shrink
+        params: {ratio: 0.7}
+      # 非派发阶段
+      - indicator: not_distribution
+      # PE合理（避免高估值风险）
+      - indicator: pe_ttm_below
+        params: {threshold: 40}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数
+stop_loss_pct: 10
+take_profit_pct: 60
+trailing_stop_pct: 20
+max_hold_days: 180

@@ -1,0 +1,46 @@
+# 策略：深跌放量反弹
+# 来源：quant_discover 发现四 - 底分型的统计规律
+# 统计依据：前20天跌>=40%+连跌>=5天+放量>=1.5倍，成功率93.9%
+# 核心逻辑：深跌后的放量是恐慌抛售+主力接货的信号
+
+name: D5-深跌放量反弹
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：深跌后放量企稳
+buy_groups:
+  - name: 深跌放量反弹
+    conditions:
+      # 近期深跌（20天跌>25%）
+      - indicator: pct_change_lt
+        params: {pct: -25, lookback: 20}
+      # 连续下跌后（趋势极端）
+      - indicator: consecutive_down
+        params: {days: 3}
+      # 放量（量比>1.5，表示有资金进场）
+      - indicator: volume_anomaly
+        params: {ratio: 1.5}
+      # 处于低位
+      - indicator: low_position
+        params: {ma60_dist: 30, price_pct: 40}
+      # PE合理
+      - indicator: pe_ttm_below
+        params: {threshold: 50}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数（深跌反弹策略需要更宽的止损）
+stop_loss_pct: 12
+take_profit_pct: 50
+trailing_stop_pct: 18
+max_hold_days: 120

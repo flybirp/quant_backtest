@@ -1,0 +1,39 @@
+# 策略：知行金叉回踩
+# 来源：quant_discover 发现六 - 知行金叉后20天内第1次回踩zhixing_slow是最佳买点
+# 统计依据：回升率96-97%，创新高率90-92%，跌破5%以内创新高率99.3%
+
+name: D1-知行金叉回踩
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：知行金叉后回踩zhixing_slow附近
+buy_groups:
+  - name: 知行金叉回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 非高位派发
+      - indicator: not_distribution
+      # 相对强度（避免弱势股）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件：知行死叉或趋势破坏
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      - indicator: zhixing_dead_cross
+
+# 风控参数
+stop_loss_pct: 8
+take_profit_pct: 50
+trailing_stop_pct: 15
+max_hold_days: 120

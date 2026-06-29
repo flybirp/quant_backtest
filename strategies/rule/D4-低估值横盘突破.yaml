@@ -1,0 +1,44 @@
+# 策略：低估值横盘突破
+# 来源：quant_discover 发现七 - 横盘震荡后的突破方向
+# 统计依据：PE<25+量比>1.2 向上突破概率是向下的6.5倍
+# 核心逻辑：低估值横盘后期放量是向上突破的强信号
+
+name: D4-低估值横盘突破
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：横盘整理后放量突破 + 低估值
+buy_groups:
+  - name: 低估值横盘突破
+    conditions:
+      # 横盘缩量（蓄势阶段）
+      - indicator: sideway_shrink
+      # 量能异动（放量突破信号）
+      - indicator: volume_anomaly
+        params: {ratio: 1.5}
+      # PE<25（低估值保护）
+      - indicator: pe_ttm_below
+        params: {threshold: 25}
+      # PB<3（低估值保护）
+      - indicator: pb_below
+        params: {threshold: 3.0}
+      # 知行多头排列（趋势确认）
+      - indicator: zhixing_fast_above_slow
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数
+stop_loss_pct: 8
+take_profit_pct: 50
+trailing_stop_pct: 15
+max_hold_days: 180
