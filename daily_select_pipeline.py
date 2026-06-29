@@ -156,7 +156,11 @@ def scan_buy_signals(strategy_name: str, pool_name: str = "大蓝筹") -> list:
 
 
 def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
-    """扫描卖点信号"""
+    """扫描卖点信号
+
+    ⚠️ 重要原则：买点和卖点必须使用同一个策略！
+    不能用A策略买入，用B策略卖出。
+    """
     from backend.main import _config_from_dict
     from backend.backtest_engine import run_backtest
 
@@ -171,13 +175,21 @@ def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
 
     sell_signals = []
     today = datetime.now().strftime("%Y-%m-%d")
+    skipped_count = 0
 
     for holding in portfolio:
         code = holding.get('code')
         buy_price = holding.get('buy_price', 0)
         buy_date = holding.get('buy_date', '')
+        holding_strategy = holding.get('strategy', '')
 
         if not code or not buy_price:
+            continue
+
+        # ⚠️ 强制限制：买点和卖点必须使用同一个策略
+        if holding_strategy and holding_strategy != strategy_name:
+            print(f"  ⚠️ 跳过 {code}: 买入策略={holding_strategy} ≠ 当前策略={strategy_name}")
+            skipped_count += 1
             continue
 
         # 为单只股票运行回测
@@ -209,6 +221,9 @@ def scan_sell_signals(strategy_name: str, portfolio: list) -> list:
                                   datetime.strptime(buy_date, '%Y-%m-%d')).days,
                     'strategy': strategy_name,
                 })
+
+    if skipped_count > 0:
+        print(f"  ⚠️ 跳过 {skipped_count} 只股票（策略不匹配）")
 
     print(f"  ✅ 发现 {len(sell_signals)} 个卖点信号")
     return sell_signals
