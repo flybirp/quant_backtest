@@ -101,6 +101,14 @@ def run_pipeline(strategy_name: str, pool_name: str, yaml_path: str = None,
         for t in r.trades
     ]
 
+    # 计算活着赚钱视角指标
+    cagr = r.annual_return_pct
+    max_dd = abs(r.max_drawdown_pct)
+    calmar = cagr / max_dd if max_dd > 0 and cagr > 0 else 0
+    ev_dd_ratio = r.expected_value / max_dd if max_dd > 0 else 0
+    monthly_trades = r.total_trades / 12 / 12 if r.total_trades > 0 else 0  # 假设12年数据
+    win_pl = (r.win_rate / 100) * r.profit_loss_ratio
+
     summary = {
         "strategy": strategy_name,
         "pool": pool_name,
@@ -125,6 +133,12 @@ def run_pipeline(strategy_name: str, pool_name: str, yaml_path: str = None,
         "lose_trades": r.lose_trades,
         "elapsed_seconds": round(elapsed, 1),
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        # ── 活着赚钱视角指标 ──
+        "calmar_ratio": round(calmar, 2),
+        "ev_maxdd_ratio": round(ev_dd_ratio, 2),
+        "monthly_trades": round(monthly_trades, 1),
+        "win_pl_ratio": round(win_pl, 2),
+        # ── 策略配置快照（确保 JSON 自包含） ──
         # ── 策略配置快照（确保 JSON 自包含） ──
         "config": {
             "stop_loss_pct": cfg.get("stop_loss_pct", 5.0),
@@ -176,15 +190,17 @@ def run_pipeline(strategy_name: str, pool_name: str, yaml_path: str = None,
         "report_path": report_path,
     }
 
-    print(f"\n{'='*60}", flush=True)
+    print(f"\n{'='*70}", flush=True)
     print(f"  ✅ {strategy_name} | {pool_name}", flush=True)
     print(f"  EV={r.expected_value:+.2f}%  Win={r.win_rate:.1f}%  "
-          f"Trade={r.total_trades}  Sharpe={r.sharpe_ratio:.2f}  "
-          f"Time={elapsed:.0f}s", flush=True)
+          f"Trade={r.total_trades}  Sharpe={r.sharpe_ratio:.2f}", flush=True)
+    print(f"  CAGR={cagr:+.2f}%  MaxDD={r.max_drawdown_pct:+.1f}%  "
+          f"Calmar={calmar:.2f}  EV/MaxDD={ev_dd_ratio:+.2f}", flush=True)
+    print(f"  月均交易={monthly_trades:.1f}笔  Time={elapsed:.0f}s", flush=True)
     print(f"  → {outpath}", flush=True)
     if report_path:
         print(f"  → {report_path}", flush=True)
-    print(f"{'='*60}\n", flush=True)
+    print(f"{'='*70}\n", flush=True)
 
     return result
 
@@ -237,9 +253,13 @@ def _append_top_strategy(name: str, pool: str, summary: dict):
     trades = summary.get("total_trades", 0)
     sharpe = summary.get("sharpe_ratio", 0)
     dd = summary.get("max_drawdown_pct", 0)
+    cagr = summary.get("annual_return_pct", 0)
+    calmar = summary.get("calmar_ratio", 0)
+    ev_dd = summary.get("ev_maxdd_ratio", 0)
+    monthly = summary.get("monthly_trades", 0)
     ts = summary.get("timestamp", "")
 
-    line = f"| {name} | {pool} | {ev:+.2f}% | {wr:.1f}% | {trades} | {dd:.1f}% | {sharpe:.2f} | {ts} |\n"
+    line = f"| {name} | {pool} | {ev:+.2f}% | {wr:.1f}% | {trades} | {dd:.1f}% | {sharpe:.2f} | {cagr:+.2f}% | {calmar:.2f} | {ev_dd:+.2f} | {monthly:.1f} | {ts} |\n"
 
     with open(top_file, "a", encoding="utf-8") as f:
         f.write(line)
