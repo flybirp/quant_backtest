@@ -1,0 +1,46 @@
+# 策略：知行金叉回踩（稳健版）
+# 设计思路：止损控制在20%以内，适合散户心态
+# 优化点：
+# 1. 止损：15% → 12%（散户心理承受上限）
+# 2. 移动止损：25% → 18%（更早锁定利润）
+# 3. 止盈：30% → 25%（更快止盈）
+# 4. 持仓：250天 → 180天（避免长期套牢）
+
+name: D1-知行金叉回踩-稳健
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：知行金叉后回踩zhixing_slow附近
+buy_groups:
+  - name: 知行金叉回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 非高位派发
+      - indicator: not_distribution
+      # 相对强度（避免弱势股）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+      # 市值>100亿（避免小盘股波动过大）
+      - indicator: total_mv_above
+        params: {threshold: 100}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      - indicator: zhixing_dead_cross
+
+# 风控参数（稳健版，止损≤20%）
+stop_loss_pct: 12        # 止损12%（散户心理承受内）
+take_profit_pct: 25      # 止盈25%（更快锁定）
+trailing_stop_pct: 18    # 移动止损18%（更早锁定）
+max_hold_days: 180       # 最长持仓180天
