@@ -1,0 +1,75 @@
+# 策略：确定性回踩
+# 基于 quant_discover 买点特征_discover.md + 金叉前特征_discover.md
+#
+# 目标：胜率50%+，EV 4%+
+#
+# 核心逻辑：
+# 1. zhixing_fast 金叉 zhixing_slow（趋势确认）
+# 2. 波段内回撤 < 5%（"安静的上涨"）- 回到峰值98%概率100%
+# 3. RSI > 50（多头动能）- 创新高率92.4%
+# 4. KDJ 金叉（短期动能确认）- 增加入场时机精度
+# 5. 量比 < 1.5（非放量回踩）
+# 6. 距 zhixing_slow > 0%（未跌破支撑）- 创新高率89.1%
+#
+# 统计依据：
+# - 波段回撤<5% + RSI>50：91.2%涨幅>5%，收益+4.0%，样本16,358
+# - RSI>50 + 振幅<3% + 量比>0.8：99.3%创新高率，收益+4.1%
+# - 波段回撤<5% + RSI>50 + 振幅<3% + 量比>0.8 + 距zs>0%：100%回到峰值，+3.7%
+# - KDJ金叉：短期动能转强，增加入场时机精度
+#
+# 卖点逻辑（分批止盈）：
+# 1. 第一卖点：回到持仓最高价（前高点）→ 卖50%
+# 2. 第二卖点：从最高价再涨20% → 卖剩余50%
+# 3. 止损：跌破买点5% → 清仓
+
+name: F3-确定性回踩
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：确定性回踩
+buy_groups:
+  - name: 确定性回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格在zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # RSI > 50（多头动能）
+      - indicator: rsi_overbought
+        params: {period: 14, threshold: 50}
+      # KDJ 金叉（短期动能确认）
+      - indicator: kdj_golden_cross
+      # 缩量回踩（量比<1.5，非放量）
+      - indicator: volume_shrink
+        params: {ratio: 1.5}
+      # 非派发阶段
+      - indicator: not_distribution
+      # 相对强度为正（20日）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 分批止盈（Exit Ladder）- 动态前高版
+exit_ladder:
+  - use_highest: true        # 回到持仓最高价时触发
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从最高价再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
+
+# 风控参数
+stop_loss_pct: 5         # 止损5%
+take_profit_pct: 0       # 不使用固定止盈
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天

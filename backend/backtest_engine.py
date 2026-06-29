@@ -495,8 +495,14 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                             if from_highest_pct >= 0 and highest_profit > 0:
                                 should_trigger = True
                                 trigger_reason = f"回到前高+{highest_profit:.1f}%"
+                        elif level.get("from_highest_pct", 0) > 0:
+                            # 模式2：基于最高价的涨幅
+                            # 当价格从最高价再涨X%时触发
+                            if highest_profit > 0 and from_highest_pct >= level["from_highest_pct"]:
+                                should_trigger = True
+                                trigger_reason = f"前高+{level['from_highest_pct']}%"
                         else:
-                            # 模式2：基于买入价（传统模式）
+                            # 模式3：基于买入价（传统模式）
                             if lot_profit >= level["profit_pct"]:
                                 should_trigger = True
                                 trigger_reason = f"分批止盈+{level['profit_pct']}%"
