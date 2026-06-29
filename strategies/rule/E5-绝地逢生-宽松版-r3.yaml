@@ -1,0 +1,34 @@
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: pct_change_lt
+    params:
+      lookback: 10
+      pct: -10
+  - indicator: zhixing_fast_above_slow
+  - indicator: not_distribution
+  - indicator: pe_ttm_below
+    params:
+      threshold: 35
+  - indicator: pb_below
+    params:
+      threshold: 3.0
+  - indicator: total_mv_above
+    params:
+      threshold: 100
+  name: 绝地逢生宽松版
+buy_price_type: open
+k_type: daily
+max_hold_days: 180
+name: E5-绝地逢生-宽松版-r3
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+  name: 趋势反转
+sell_price_type: avg
+stop_loss_pct: 12
+take_profit_pct: 30
+trailing_stop_pct: 18

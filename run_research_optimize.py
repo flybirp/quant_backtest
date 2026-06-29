@@ -125,6 +125,18 @@ OPTIMIZATION_CONFIG = {
             "止损12%是最佳平衡点",
         ],
     },
+    "E5-绝地逢生-宽松版": {
+        "base_strategy": "E5-绝地逢生-宽松版",
+        "focus": "绝地逢生宽松版 - 深跌+知行多头+低估值",
+        "key_params": ["stop_loss_pct", "take_profit_pct", "trailing_stop_pct", "max_hold_days"],
+        "insights": [
+            "PE<25 + 量比>1.2：向上突破概率6.5倍",
+            "PB<1：向下突破概率仅3.2%",
+            "市值>500亿：向下突破概率仅3.4%",
+            "深跌（前10天跌>10%）：恐慌出清",
+            "止损12%是最佳平衡点",
+        ],
+    },
 }
 
 

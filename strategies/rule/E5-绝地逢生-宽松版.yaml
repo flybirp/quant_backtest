@@ -1,0 +1,58 @@
+# 策略：绝地逢生-宽松版
+# 来源：discover_绝地逢生.md - 基本面指标（宽松）
+#
+# 核心逻辑（宽松版）：
+# 1. 深跌（前10天跌>10%）- 恐慌出清
+# 2. 知行多头排列 - 趋势确认
+# 3. 非派发阶段 - 卖压衰竭
+# 4. PE < 35 - 估值保护
+# 5. PB < 3 - 破净保护
+# 6. 市值 > 100亿 - 大盘股稳定
+#
+# 统计依据：
+# - PE<25 + 量比>1.2：向上突破概率6.5倍
+# - PB<1：向下突破概率仅3.2%
+# - 市值>500亿：向下突破概率仅3.4%
+
+name: E5-绝地逢生-宽松版
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：绝地逢生宽松版
+buy_groups:
+  - name: 绝地逢生宽松版
+    conditions:
+      # 深跌（前10天跌>10%）- 恐慌出清
+      - indicator: pct_change_lt
+        params: {pct: -10, lookback: 10}
+      # 知行多头排列 - 趋势确认
+      - indicator: zhixing_fast_above_slow
+      # 非派发阶段 - 卖压衰竭
+      - indicator: not_distribution
+      # PE < 35 - 估值保护
+      - indicator: pe_ttm_below
+        params: {threshold: 35}
+      # PB < 3 - 破净保护
+      - indicator: pb_below
+        params: {threshold: 3.0}
+      # 市值 > 100亿 - 大盘股稳定
+      - indicator: total_mv_above
+        params: {threshold: 100}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数（稳健版，止损≤15%）
+stop_loss_pct: 12        # 止损12%（散户心理承受内）
+take_profit_pct: 30      # 止盈30%
+trailing_stop_pct: 18    # 移动止损18%
+max_hold_days: 180       # 最长持仓180天
