@@ -474,7 +474,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
             if config.exit_ladder and open_lots and sell_exec_price > 0:
                 min_unit = config.min_trade_unit
                 to_close_partial = []
-                for i, lot in enumerate(open_lots):
+                for lot in open_lots:
                     lot_profit = (close_price - lot["buy_price"]) / lot["buy_price"] * 100
                     for level_idx, level in enumerate(config.exit_ladder):
                         if level_idx in lot["exit_triggered"]:
@@ -492,11 +492,10 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                                 is_clear = (actual_close == lot["shares"])
                                 action = "clear" if is_clear else "reduce"
                                 reason = f"分批止盈+{level['profit_pct']}%" if not is_clear else f"分批止盈清仓+{level['profit_pct']}%"
-                                to_close_partial.append((i, level_idx, actual_close, reason, action))
+                                to_close_partial.append((lot, level_idx, actual_close, reason, action))
 
-                # 从后往前处理，避免索引错位
-                for i, level_idx, close_shares, reason, action in reversed(to_close_partial):
-                    lot = open_lots[i]
+                # 直接使用 lot 对象引用，避免索引错位
+                for lot, level_idx, close_shares, reason, action in to_close_partial:
                     profit_pct = _net_profit_pct(lot["buy_price"], sell_exec_price,
                                                   config.commission_rate, config.stamp_tax_rate)
                     hold_days = _calc_hold_days(lot["buy_ds"], sell_exec_ds)
@@ -512,8 +511,9 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                     ))
                     lot["exit_triggered"].add(level_idx)
                     lot["shares"] -= actual_close
-                    if lot["shares"] <= 0:
-                        open_lots.pop(i)
+
+                # 统一清理空仓位
+                open_lots[:] = [lot for lot in open_lots if lot["shares"] > 0]
 
             # 4. 风控检查
             if open_lots and sell_exec_price > 0:
