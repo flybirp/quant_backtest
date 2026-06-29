@@ -102,6 +102,29 @@ OPTIMIZATION_CONFIG = {
             "止损12%是最佳平衡点",
         ],
     },
+    "E1-绝地逢生": {
+        "base_strategy": "E1-绝地逢生-v2",
+        "focus": "绝地逢生策略 - 深跌后放量企稳",
+        "key_params": ["stop_loss_pct", "take_profit_pct", "trailing_stop_pct", "max_hold_days"],
+        "insights": [
+            "大跌20%+缩量击败：79.9%成功率，20天收益+12.2%",
+            "底分型+深跌40%+连跌5天+放量1.5倍：93.9%成功率",
+            "距60天低点>35%：37.6%涨50%+",
+            "低估值(PE<25)+后期放量(量比>1.2)：向上突破概率6.5倍",
+            "止损12%是最佳平衡点",
+        ],
+    },
+    "E3-绝地金叉": {
+        "base_strategy": "E3-绝地金叉",
+        "focus": "绝地金叉策略 - 深跌后知行金叉回踩",
+        "key_params": ["stop_loss_pct", "take_profit_pct", "trailing_stop_pct", "max_hold_days"],
+        "insights": [
+            "知行金叉后20天内回踩：97%回升率，92%创新高率",
+            "跌破zs不超过5%：99.3%创新高率",
+            "前期深跌（前30天跌>10%）：恐慌出清",
+            "止损12%是最佳平衡点",
+        ],
+    },
 }
 
 

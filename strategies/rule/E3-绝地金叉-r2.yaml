@@ -1,0 +1,28 @@
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_groups:
+- conditions:
+  - indicator: zhixing_fast_above_slow
+  - indicator: price_near_zhixing
+    params:
+      threshold: 5
+  - indicator: pct_change_lt
+    params:
+      lookback: 30
+      pct: -10
+  - indicator: not_distribution
+  name: 绝地金叉
+buy_price_type: open
+k_type: daily
+max_hold_days: 180
+name: E3-绝地金叉-r2
+sell_execution: next_day
+sell_groups:
+- conditions:
+  - indicator: zhixing_dead_cross
+  name: 趋势反转
+sell_price_type: avg
+stop_loss_pct: 12
+take_profit_pct: 27
+trailing_stop_pct: 18

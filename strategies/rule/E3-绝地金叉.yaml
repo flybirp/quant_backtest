@@ -1,0 +1,49 @@
+# 策略：绝地金叉
+# 来源：discover_绝地逢生.md + zfzs金叉_discover.md
+#
+# 核心逻辑：
+# 1. 知行金叉后回踩 - 最佳买点（93.7%回升率）
+# 2. 前期有深跌（前30天跌>10%）- 恐慌出清
+# 3. 价格在zhixing_slow附近 - 支撑位
+# 4. 非派发阶段 - 卖压衰竭
+#
+# 统计依据：
+# - 知行金叉后20天内回踩：97%回升率，92%创新高率
+# - 跌破zs不超过5%：99.3%创新高率
+
+name: E3-绝地金叉
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：绝地金叉 - 深跌后知行金叉回踩
+buy_groups:
+  - name: 绝地金叉
+    conditions:
+      # 知行多头排列 - 趋势确认
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 前期有深跌（前30天跌>10%）- 恐慌出清
+      - indicator: pct_change_lt
+        params: {pct: -10, lookback: 30}
+      # 非派发阶段 - 卖压衰竭
+      - indicator: not_distribution
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数（稳健版，止损≤15%）
+stop_loss_pct: 12        # 止损12%（散户心理承受内）
+take_profit_pct: 30      # 止盈30%
+trailing_stop_pct: 18    # 移动止损18%
+max_hold_days: 180       # 最长持仓180天

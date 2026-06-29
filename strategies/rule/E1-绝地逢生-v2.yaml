@@ -1,0 +1,51 @@
+# 策略：绝地逢生 v2
+# 来源：discover_绝地逢生.md - 综合6个发现文件的底部反转信号
+#
+# 核心逻辑：
+# 1. 深跌（前20天跌>15%）- 恐慌出清（放宽）
+# 2. 放量（量比>1.2）- 有资金在恐慌中接货（放宽）
+# 3. 缩量企稳（非派发阶段）- 卖压衰竭
+# 4. 低估值保护（PE<40）- 向下空间有限（放宽）
+#
+# 统计依据：
+# - 底分型+深跌40%+连跌5天+放量1.5倍：93.9%成功率
+# - 大跌20%+缩量击败：79.9%成功率
+# - 距60天低点>35%：37.6%涨50%+
+
+name: E1-绝地逢生-v2
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：绝地逢生 - 深跌后放量企稳（放宽版）
+buy_groups:
+  - name: 绝地逢生
+    conditions:
+      # 深跌（前20天跌>15%）- 恐慌出清（放宽）
+      - indicator: pct_change_lt
+        params: {pct: -15, lookback: 20}
+      # 放量（量比>1.2）- 有资金在恐慌中接货（放宽）
+      - indicator: volume_anomaly
+        params: {ratio: 1.2}
+      # 非派发阶段 - 卖压衰竭
+      - indicator: not_distribution
+      # 低估值保护（PE<40）- 向下空间有限（放宽）
+      - indicator: pe_ttm_below
+        params: {threshold: 40}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 风控参数（稳健版，止损≤15%）
+stop_loss_pct: 12        # 止损12%（散户心理承受内）
+take_profit_pct: 30      # 止盈30%
+trailing_stop_pct: 18    # 移动止损18%
+max_hold_days: 180       # 最长持仓180天
