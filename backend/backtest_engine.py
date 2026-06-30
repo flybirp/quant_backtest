@@ -265,6 +265,10 @@ def _run_signal_mode_streaming(config: StrategyConfig,
         high_arr = df["high"].values
         low_arr = df["low"].values
 
+        # 知行指标数组（用于金叉检测）
+        zhixing_fast_arr = df["zhixing_fast"].values if "zhixing_fast" in df.columns else None
+        zhixing_slow_arr = df["zhixing_slow"].values if "zhixing_slow" in df.columns else None
+
         # date_to_pos: 快速查找
         date_to_pos = dict(zip(date_strs, range(n)))
 
@@ -476,10 +480,19 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                 to_close_partial = []
                 for lot in open_lots:
                     lot_profit = (close_price - lot["buy_price"]) / lot["buy_price"] * 100
-                    # 计算相对最高价的盈利（用于 from_highest 模式）
-                    highest_profit = (lot["highest"] - lot["buy_price"]) / lot["buy_price"] * 100 if lot["highest"] > lot["buy_price"] else 0
-                    # 计算当前价格相对最高价的位置
-                    from_highest_pct = (close_price - lot["highest"]) / lot["highest"] * 100 if lot["highest"] > 0 else 0
+
+                    # 确定"前高点"：买入前N天内的最高价 vs 持仓期间最高价
+                    if lot.get("pre_buy_high") and lot["pre_buy_high"] > lot["buy_price"]:
+                        # 使用买入前的高点（金叉后到回踩之间的高点）
+                        reference_high = lot["pre_buy_high"]
+                    else:
+                        # 使用持仓期间最高价
+                        reference_high = lot["highest"]
+
+                    # 计算相对参考高点的盈利
+                    high_profit = (reference_high - lot["buy_price"]) / lot["buy_price"] * 100 if reference_high > lot["buy_price"] else 0
+                    # 计算当前价格相对参考高点的位置
+                    from_high_pct = (close_price - reference_high) / reference_high * 100 if reference_high > 0 else 0
 
                     for level_idx, level in enumerate(config.exit_ladder):
                         if level_idx in lot["exit_triggered"]:
@@ -489,16 +502,16 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                         should_trigger = False
                         trigger_reason = ""
 
-                        if level.get("use_highest", False):
-                            # 模式1：基于持仓最高价
-                            # 当价格回到最高价时触发（from_highest_pct >= 0）
-                            if from_highest_pct >= 0 and highest_profit > 0:
+                        if level.get("use_highest", False) or level.get("use_pre_buy_high", False):
+                            # 模式1：基于参考高点（持仓最高价或买入前高点）
+                            # 当价格回到参考高点时触发（from_high_pct >= 0）
+                            if from_high_pct >= 0 and high_profit > 0:
                                 should_trigger = True
-                                trigger_reason = f"回到前高+{highest_profit:.1f}%"
+                                trigger_reason = f"回到前高+{high_profit:.1f}%"
                         elif level.get("from_highest_pct", 0) > 0:
-                            # 模式2：基于最高价的涨幅
-                            # 当价格从最高价再涨X%时触发
-                            if highest_profit > 0 and from_highest_pct >= level["from_highest_pct"]:
+                            # 模式2：基于参考高点的涨幅
+                            # 当价格从参考高点再涨X%时触发
+                            if high_profit > 0 and from_high_pct >= level["from_highest_pct"]:
                                 should_trigger = True
                                 trigger_reason = f"前高+{level['from_highest_pct']}%"
                         else:
@@ -641,6 +654,22 @@ def _run_signal_mode_streaming(config: StrategyConfig,
             if not limit_blocked and (idx in sig_buy or sm_action == "buy") and buy_exec_price > 0 and (not open_lots or not config.exclusive_lock):
                 new_tid = f"T{uuid.uuid4().hex[:8]}"
                 buy_reason = sm_reason if sm_action == "buy" else "buy_signal"
+
+                # 计算"金叉后到回踩买点之间"的最高价
+                # 往前找最近的金叉日期（zhixing_fast 上穿 zhixing_slow）
+                pre_buy_high = buy_exec_price  # 默认为买入价
+                if zhixing_fast_arr is not None and zhixing_slow_arr is not None:
+                    golden_cross_idx = -1
+                    for j in range(idx - 1, max(1, idx - 120), -1):  # 最多回看120天
+                        if (zhixing_fast_arr[j] > zhixing_slow_arr[j] and
+                            zhixing_fast_arr[j - 1] <= zhixing_slow_arr[j - 1]):
+                            golden_cross_idx = j
+                            break
+
+                    if golden_cross_idx >= 0:
+                        # 从金叉日期到买入日期之间的最高价
+                        pre_buy_high = float(high_arr[golden_cross_idx:idx].max())
+
                 if config.entry_ladder:
                     # 分批建仓模式: 首笔按entry_ladder[0]的weight
                     first_weight = config.entry_ladder[0]["weight"] if config.entry_ladder else 100
@@ -648,6 +677,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                         "buy_ds": buy_exec_ds,
                         "buy_price": buy_exec_price,
                         "highest": buy_exec_price,
+                        "pre_buy_high": pre_buy_high,
                         "shares": first_weight,
                         "reason": buy_reason,
                         "trade_id": new_tid,
@@ -665,6 +695,7 @@ def _run_signal_mode_streaming(config: StrategyConfig,
                         "buy_ds": buy_exec_ds,
                         "buy_price": buy_exec_price,
                         "highest": buy_exec_price,
+                        "pre_buy_high": pre_buy_high,
                         "shares": 100,
                         "reason": buy_reason,
                         "trade_id": new_tid,

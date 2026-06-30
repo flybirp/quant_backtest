@@ -1,0 +1,65 @@
+# 策略：金叉回踩分批 v2
+# 基于F1的升级版，使用"金叉后到回踩之间的高点"作为第一卖点
+#
+# 与F1的区别：
+# - F1: 使用持仓期间最高价作为第一卖点
+# - F1-v2: 使用金叉后到回踩之间的高点作为第一卖点
+#
+# 买点逻辑：
+# 1. zhixing_fast 金叉 zhixing_slow（趋势确认）
+# 2. 价格回踩到 zhixing_slow 附近（支撑位）
+# 3. 缩量回踩（量比<0.8）- 卖压衰竭
+# 4. 非派发阶段
+# 5. 相对强度为正
+#
+# 卖点逻辑（分批止盈）：
+# 1. 第一卖点：回到金叉后到回踩之间的高点 → 卖50%
+# 2. 第二卖点：从高点再涨20% → 卖剩余50%
+# 3. 止损：跌破买点5% → 清仓
+
+name: F1-金叉回踩分批-v2
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：金叉后回踩zhixing_slow
+buy_groups:
+  - name: 金叉回踩
+    conditions:
+      # 知行多头排列（金叉后状态）
+      - indicator: zhixing_fast_above_slow
+      # 价格回踩到zhixing_slow附近（5%以内）
+      - indicator: price_near_zhixing
+        params: {threshold: 5}
+      # 缩量回踩（卖压衰竭）
+      - indicator: volume_shrink
+        params: {ratio: 0.8}
+      # 非派发阶段
+      - indicator: not_distribution
+      # 相对强度（避免弱势股）
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # 知行死叉离场
+      - indicator: zhixing_dead_cross
+
+# 分批止盈（Exit Ladder）- 金叉后高点版
+exit_ladder:
+  - use_pre_buy_high: true   # 回到金叉后到回踩之间的高点时触发
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从高点再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
+
+# 风控参数
+stop_loss_pct: 5         # 止损5%
+take_profit_pct: 0       # 不使用固定止盈
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天

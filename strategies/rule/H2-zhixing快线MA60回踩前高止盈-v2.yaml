@@ -1,0 +1,49 @@
+# 策略：zhixing快线MA60回踩前高止盈 v2
+# 使用"金叉后到回踩之间的高点"作为第一卖点
+#
+# 与H2的区别：
+# - H2: 使用持仓期间最高价作为第一卖点
+# - H2-v2: 使用zhixing_fast上穿MA60后到回踩之间的高点作为第一卖点
+
+name: H2-zhixing快线MA60回踩前高止盈-v2
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：zhixing_fast > MA60 回踩
+buy_groups:
+  - name: zhixing快线MA60回踩
+    conditions:
+      - indicator: zhixing_fast_above_ma
+        params: {period: 60}
+      - indicator: price_above_ma
+        params: {period: 60}
+      - indicator: volume_shrink
+        params: {ratio: 1.5}
+      - indicator: not_distribution
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      - indicator: zhixing_fast_below_ma
+        params: {period: 60}
+
+# 分批止盈（Exit Ladder）- 金叉后高点版
+exit_ladder:
+  - use_pre_buy_high: true   # 回到zhixing_fast上穿MA60后到回踩之间的高点时触发
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从高点再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
+
+# 风控参数
+stop_loss_pct: 5         # 止损5%
+take_profit_pct: 0       # 不使用固定止盈
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天

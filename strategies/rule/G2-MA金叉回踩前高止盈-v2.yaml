@@ -1,0 +1,49 @@
+# 策略：MA金叉回踩前高止盈 v2
+# 使用"金叉后到回踩之间的高点"作为第一卖点
+#
+# 与G2的区别：
+# - G2: 使用持仓期间最高价作为第一卖点
+# - G2-v2: 使用MA金叉后到回踩之间的高点作为第一卖点
+
+name: G2-MA金叉回踩前高止盈-v2
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：MA金叉后回踩MA60
+buy_groups:
+  - name: MA金叉回踩
+    conditions:
+      - indicator: ma_above
+        params: {fast: 20, slow: 60}
+      - indicator: price_above_ma
+        params: {period: 60}
+      - indicator: volume_shrink
+        params: {ratio: 1.5}
+      - indicator: not_distribution
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      - indicator: ma_cross_down
+        params: {fast: 20, slow: 60}
+
+# 分批止盈（Exit Ladder）- 金叉后高点版
+exit_ladder:
+  - use_pre_buy_high: true   # 回到金叉后到回踩之间的高点时触发
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从高点再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
+
+# 风控参数
+stop_loss_pct: 5         # 止损5%
+take_profit_pct: 0       # 不使用固定止盈
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天
