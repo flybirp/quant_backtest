@@ -1,0 +1,74 @@
+# 策略：MA确定性回踩-最佳
+# 基于MA20/MA60金叉后的回踩买点（确定性回踩版）
+#
+# 与F3的区别：
+# - F3: zhixing_fast 金叉 zhixing_slow + RSI + KDJ
+# - G3: MA20 金叉 MA60 + RSI + KDJ
+#
+# 买点逻辑：
+# 1. MA20 > MA60（多头排列）
+# 2. 价格回踩到MA60附近（支撑位）
+# 3. RSI > 50（多头动能）
+# 4. KDJ 金叉（短期动能确认）
+# 5. 缩量回踩（量比<1.5）
+# 6. 非派发阶段
+# 7. 相对强度为正
+#
+# 卖点逻辑（动态前高止盈）：
+# 1. 第一卖点：回到持仓最高价（前高点）→ 卖50%
+# 2. 第二卖点：从最高价再涨20% → 卖剩余50%
+# 3. 止损：跌破买点8% → 清仓（优化后）
+
+name: G3-MA确定性回踩-最佳
+_pool: 大蓝筹
+backtest_mode: signal
+buy_execution: next_day
+buy_price_type: open
+sell_execution: next_day
+sell_price_type: avg
+k_type: daily
+
+# 入场条件：MA金叉后确定性回踩
+buy_groups:
+  - name: MA确定性回踩
+    conditions:
+      # MA20 > MA60（多头排列）
+      - indicator: ma_above
+        params: {fast: 20, slow: 60}
+      # 价格在MA60上方（回踩但未跌破）
+      - indicator: price_above_ma
+        params: {period: 60}
+      # RSI > 50（多头动能）
+      - indicator: rsi_overbought
+        params: {period: 14, threshold: 50}
+      # KDJ 金叉（短期动能确认）
+      - indicator: kdj_golden_cross
+      # 缩量回踩（量比<1.5）
+      - indicator: volume_shrink
+        params: {ratio: 1.5}
+      # 非派发阶段
+      - indicator: not_distribution
+      # 相对强度为正
+      - indicator: relative_strength
+        params: {lookback: 20, threshold: 0}
+
+# 出场条件
+sell_groups:
+  - name: 趋势反转
+    conditions:
+      # MA20下穿MA60离场
+      - indicator: ma_cross_down
+        params: {fast: 20, slow: 60}
+
+# 分批止盈（Exit Ladder）- 动态前高版
+exit_ladder:
+  - use_highest: true        # 回到持仓最高价时触发
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从最高价再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
+
+# 风控参数（优化后）
+stop_loss_pct: 8         # 止损8%（从5%优化）
+take_profit_pct: 0       # 不使用固定止盈
+trailing_stop_pct: 0     # 不使用移动止损
+max_hold_days: 180       # 最长持仓180天
