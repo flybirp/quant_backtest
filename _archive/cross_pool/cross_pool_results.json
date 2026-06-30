@@ -1,0 +1,182 @@
+[
+  {
+    "strategy": "TOP1",
+    "pool": "大蓝筹",
+    "ev": 6.07,
+    "win_rate": 44.3,
+    "pl_ratio": 6.05,
+    "positions": 210,
+    "trades": 1227
+  },
+  {
+    "strategy": "TOP1",
+    "pool": "科创板",
+    "ev": 4.23,
+    "win_rate": 42.9,
+    "pl_ratio": 3.46,
+    "positions": 434,
+    "trades": 2457
+  },
+  {
+    "strategy": "TOP1",
+    "pool": "创业板",
+    "ev": 5.69,
+    "win_rate": 46.0,
+    "pl_ratio": 3.8,
+    "positions": 941,
+    "trades": 4179
+  },
+  {
+    "strategy": "TOP1",
+    "pool": "全量",
+    "ev": 5.9,
+    "win_rate": 48.7,
+    "pl_ratio": 4.08,
+    "positions": 3154,
+    "trades": 15499
+  },
+  {
+    "strategy": "TOP2",
+    "pool": "大蓝筹",
+    "ev": 6.06,
+    "win_rate": 44.8,
+    "pl_ratio": 5.93,
+    "positions": 210,
+    "trades": 1209
+  },
+  {
+    "strategy": "TOP2",
+    "pool": "科创板",
+    "ev": 4.09,
+    "win_rate": 41.7,
+    "pl_ratio": 3.53,
+    "positions": 434,
+    "trades": 2334
+  },
+  {
+    "strategy": "TOP2",
+    "pool": "创业板",
+    "ev": 4.87,
+    "win_rate": 43.9,
+    "pl_ratio": 3.76,
+    "positions": 941,
+    "trades": 3591
+  },
+  {
+    "strategy": "TOP2",
+    "pool": "全量",
+    "ev": 5.38,
+    "win_rate": 47.3,
+    "pl_ratio": 4.02,
+    "positions": 3154,
+    "trades": 14277
+  },
+  {
+    "strategy": "TOP3",
+    "pool": "大蓝筹",
+    "ev": 6.02,
+    "win_rate": 45.4,
+    "pl_ratio": 5.93,
+    "positions": 249,
+    "trades": 1398
+  },
+  {
+    "strategy": "TOP3",
+    "pool": "科创板",
+    "ev": 5.03,
+    "win_rate": 44.4,
+    "pl_ratio": 3.72,
+    "positions": 531,
+    "trades": 3025
+  },
+  {
+    "strategy": "TOP3",
+    "pool": "创业板",
+    "ev": 6.18,
+    "win_rate": 47.3,
+    "pl_ratio": 4.0,
+    "positions": 1132,
+    "trades": 5167
+  },
+  {
+    "strategy": "TOP3",
+    "pool": "全量",
+    "ev": 6.44,
+    "win_rate": 49.7,
+    "pl_ratio": 4.32,
+    "positions": 3822,
+    "trades": 19355
+  },
+  {
+    "strategy": "TOP4",
+    "pool": "大蓝筹",
+    "ev": 5.82,
+    "win_rate": 43.2,
+    "pl_ratio": 5.84,
+    "positions": 257,
+    "trades": 1268
+  },
+  {
+    "strategy": "TOP4",
+    "pool": "科创板",
+    "ev": 3.26,
+    "win_rate": 39.0,
+    "pl_ratio": 3.3,
+    "positions": 538,
+    "trades": 2499
+  },
+  {
+    "strategy": "TOP4",
+    "pool": "创业板",
+    "ev": 3.92,
+    "win_rate": 41.6,
+    "pl_ratio": 3.39,
+    "positions": 1180,
+    "trades": 3801
+  },
+  {
+    "strategy": "TOP4",
+    "pool": "全量",
+    "ev": 4.58,
+    "win_rate": 45.2,
+    "pl_ratio": 3.72,
+    "positions": 3903,
+    "trades": 15861
+  },
+  {
+    "strategy": "TOP5",
+    "pool": "大蓝筹",
+    "ev": 4.06,
+    "win_rate": 43.7,
+    "pl_ratio": 4.32,
+    "positions": 435,
+    "trades": 1993
+  },
+  {
+    "strategy": "TOP5",
+    "pool": "科创板",
+    "ev": 1.9,
+    "win_rate": 38.1,
+    "pl_ratio": 2.63,
+    "positions": 811,
+    "trades": 3503
+  },
+  {
+    "strategy": "TOP5",
+    "pool": "创业板",
+    "ev": 3.12,
+    "win_rate": 43.3,
+    "pl_ratio": 2.87,
+    "positions": 1797,
+    "trades": 5915
+  },
+  {
+    "strategy": "TOP5",
+    "pool": "全量",
+    "ev": 3.27,
+    "win_rate": 44.3,
+    "pl_ratio": 3.13,
+    "positions": 6195,
+    "trades": 24417
+  }
+]

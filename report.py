@@ -14,6 +14,7 @@ from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 import numpy as np
+import pandas as pd
 
 BASE = Path(__file__).parent
 RESULTS_DIR = BASE / "results"
@@ -85,6 +86,144 @@ from backend.survival_check import check_survivorship, format_survivorship_repor
 
 # ── Data loading ──────────────────────────────────────────────────
 
+# 数据目录（用于加载原始股票数据）
+DATA_DIR = Path("/Users/flybirp/Documents/mainland_data")
+
+def _load_stock_close(code: str) -> pd.Series:
+    """加载股票的每日收盘价，返回以日期为索引的Series"""
+    file_path = DATA_DIR / f"{code}.csv"
+    if not file_path.exists():
+        return pd.Series(dtype=float)
+    
+    df = pd.read_csv(file_path)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.sort_values("date").set_index("date")
+    return df["close"]
+
+
+def _build_equity_by_return(trades: list, initial_capital: float = 100000) -> list[dict]:
+    """
+    基于日收益率构建权益曲线（解决signal模式的回撤计算问题）
+    
+    逻辑：
+    1. 对每个持仓算出持仓期间的日收益率序列
+    2. 同一天多个持仓做等权平均得到组合日收益率
+    3. 空仓日记0
+    4. 累乘成equity curve
+    
+    Args:
+        trades: 交易记录列表
+        initial_capital: 初始资金
+    
+    Returns:
+        equity_curve: 权益曲线（与原格式兼容）
+    """
+    if not trades:
+        return []
+    
+    # 收集所有交易的持仓期间日收益率
+    all_returns = []
+    all_dates = set()
+    valid_trades = 0
+    
+    for trade in trades:
+        code = trade.get("code", "")
+        buy_date = pd.Timestamp(trade.get("buy_date", ""))
+        sell_date = pd.Timestamp(trade.get("sell_date", ""))
+        
+        # 加载股票数据
+        close_series = _load_stock_close(code)
+        if close_series.empty:
+            continue
+        
+        # 计算日收益率
+        daily_returns = close_series.pct_change()
+        
+        # 只保留持仓期间 (buy_date, sell_date]
+        mask = (daily_returns.index > buy_date) & (daily_returns.index <= sell_date)
+        position_returns = daily_returns[mask].dropna()
+        
+        if not position_returns.empty:
+            all_returns.append(position_returns)
+            all_dates.update(position_returns.index)
+            valid_trades += 1
+    
+    if not all_returns:
+        return []
+    
+    # 构建统一时间轴
+    all_dates = sorted(all_dates)
+    
+    # 使用pd.concat代替frame.insert，避免DataFrame碎片化
+    ret_frames = []
+    for i, ret in enumerate(all_returns):
+        ret_series = ret.rename(f"trade_{i}")
+        ret_frames.append(ret_series)
+    
+    ret_table = pd.concat(ret_frames, axis=1)
+    ret_table = ret_table.reindex(all_dates)
+    
+    # 每日组合收益 = 当日所有持仓的等权平均（NaN自动忽略 = 不持仓不计入）
+    portfolio_returns = ret_table.mean(axis=1, skipna=True)
+    
+    # 空仓日记0
+    portfolio_returns = portfolio_returns.fillna(0)
+    
+    # 累乘成equity curve
+    equity = (1 + portfolio_returns).cumprod() * initial_capital
+    
+    # 构建结果（与原格式兼容）
+    equity_curve = []
+    for date, eq in equity.items():
+        equity_curve.append({
+            "date": date.strftime("%Y-%m-%d"),
+            "equity": round(float(eq), 2),
+            "cash": 0,
+            "positions": 0,
+            "cum_return_pct": round((eq / initial_capital - 1) * 100, 2),
+        })
+    
+    return equity_curve
+
+
+def _fix_signal_equity_curve(data: dict) -> dict:
+    """修正signal模式下的权益曲线数据（基于日收益率重新计算）"""
+    trades = data.get("trades", [])
+    equity_curve = data.get("equity_curve", [])
+    
+    # 检测是否需要修正
+    needs_fix = False
+    
+    # 1. 检查是否有cum_return_pct < -100%的异常
+    has_anomaly = any(
+        e.get("cum_return_pct", 0) < -100
+        for e in equity_curve
+    )
+    if has_anomaly:
+        needs_fix = True
+    
+    # 2. 检查是否有同一天多个数据点的情况
+    if not needs_fix and equity_curve:
+        dates = [e.get("date", "") for e in equity_curve]
+        if len(dates) != len(set(dates)):
+            needs_fix = True
+    
+    # 不需要修正
+    if not needs_fix or not trades:
+        return data
+    
+    # 使用基于日收益率的方法重新计算权益曲线
+    summary = data.get("summary", {})
+    initial_capital = summary.get("initial_capital", 100000)
+    new_equity_curve = _build_equity_by_return(trades, initial_capital)
+    
+    # 如果计算成功，更新数据
+    if new_equity_curve:
+        data["equity_curve"] = new_equity_curve
+    
+    return data
+
+
 def load_results(*filenames):
     """加载一个或多个结果文件"""
     all_data = []
@@ -97,6 +236,8 @@ def load_results(*filenames):
             continue
         with open(path) as f:
             data = json.load(f)
+        # 修正signal模式下的权益曲线数据
+        data = _fix_signal_equity_curve(data)
         label = data["summary"]["strategy"]
         all_data.append((label, data))
     return all_data
@@ -213,7 +354,9 @@ def print_core_summary(all_data, risk_free_rate=0.0):
 
         total_ret = s.get("total_return_pct", total_return(equity, s.get("initial_capital", 100000)))
         annual_ret = s.get("annual_return_pct", annual_return(equity, s.get("initial_capital", 100000)))
-        max_dd = s.get("max_drawdown_pct", 0)
+        # 从equity_curve重新计算最大回撤（修正后的数据）
+        max_dd_result = max_drawdown(equity) if equity else (0, "", "", 0)
+        max_dd = max_dd_result[0]
         # Use forward-filled Sharpe from analytics for accuracy
         shp = sharpe_ratio(equity, s.get("initial_capital", 100000), risk_free_rate=risk_free_rate)
         if shp == 0.0:
@@ -409,7 +552,7 @@ def print_trade_attribution(all_data):
                 print(f"\n  交易最活跃股票 TOP5:")
                 for s in top_stocks:
                     print(f"    {s.get('code', ''):<10} {s.get('count', 0):>4}笔  "
-                          f"总收益 {s.get('total_return', 0):>+8.2f}%")
+                          f"总收益 {s.get('total_return_pct', 0):>+8.2f}%")
 
 
 # ── Section 6: 换手率与容量 ─────────────────────────────────────

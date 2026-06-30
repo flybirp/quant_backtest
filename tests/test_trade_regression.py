@@ -5,6 +5,7 @@
 任何代码改动导致这些交易变化都会被捕获。
 
 运行：pytest tests/test_trade_regression.py -v
+运行所有测试（含慢测试）：pytest -v -m "slow or not slow"
 """
 import json
 import pytest
@@ -70,6 +71,7 @@ def _trade_key(t: dict) -> str:
 
 # === 测试用例 ===
 
+@pytest.mark.slow
 class TestDS6Regression:
     """DS6 策略回归测试（恐慌错杀-缩量+PB<3）"""
 
@@ -105,6 +107,7 @@ class TestDS6Regression:
                 f"DS6 {ft['code']} {ft['buy_date']}: 退出原因变化 '{expected_reason}'→'{actual_reason}'"
 
 
+@pytest.mark.slow
 class TestFB1Regression:
     """FB1 策略回归测试（快速杀跌）"""
 
@@ -135,6 +138,7 @@ class TestFB1Regression:
                 f"FB1 {ft['code']} {ft['buy_date']}: 退出原因变化"
 
 
+@pytest.mark.slow
 class TestZzh73Regression:
     """zzh7.3 策略回归测试（状态机模式）"""
 

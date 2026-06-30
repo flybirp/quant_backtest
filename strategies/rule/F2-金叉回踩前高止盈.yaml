@@ -60,10 +60,10 @@ sell_groups:
 # 第一卖点：价格回到持仓最高价（前高点）→ 卖50%
 # 第二卖点：从最高价再涨20% → 卖剩余50%
 exit_ladder:
-  - use_highest: true    # 使用持仓最高价作为触发点
-    close_pct: 50        # 卖出50%
-  - profit_pct: 20       # 从买入价盈利20%（约等于从最高价再涨20%）
-    close_pct: 100       # 卖出剩余全部
+  - use_highest: true        # 使用持仓最高价作为触发点
+    close_pct: 50            # 卖出50%
+  - from_highest_pct: 20     # 从最高价再涨20%时触发
+    close_pct: 100           # 卖出剩余全部
 
 # 风控参数
 stop_loss_pct: 5         # 止损5%（跌破买点清仓）
