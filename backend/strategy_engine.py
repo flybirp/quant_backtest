@@ -427,6 +427,22 @@ def check_condition(df: pd.DataFrame, idx: int, cond: dict) -> bool:
         if indicator == "zhixing_fast_below_slow":
             return df["zhixing_fast"].iloc[idx] < df["zhixing_slow"].iloc[idx]
 
+        if indicator == "zhixing_fast_above_ma":
+            # zhixing_fast 在指定 MA 上方
+            period = params.get("period", 60)
+            ma_col = f"ma{period}"
+            if ma_col in df.columns:
+                return df["zhixing_fast"].iloc[idx] > df[ma_col].iloc[idx]
+            return False
+
+        if indicator == "zhixing_fast_below_ma":
+            # zhixing_fast 在指定 MA 下方
+            period = params.get("period", 60)
+            ma_col = f"ma{period}"
+            if ma_col in df.columns:
+                return df["zhixing_fast"].iloc[idx] < df[ma_col].iloc[idx]
+            return False
+
         if indicator == "zhixing_golden_cross":
             cur = df["zhixing_fast"].iloc[idx] > df["zhixing_slow"].iloc[idx]
             prev = df["zhixing_fast"].iloc[idx - 1] <= df["zhixing_slow"].iloc[idx - 1]
